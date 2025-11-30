@@ -49,10 +49,10 @@
     </select><br>
 
     <label>Quitação (%):</label><br>
-    <input type="number" id="cfgQuitacao" placeholder="Ex: 30"><br>
+    <input type="number" id="cfgQuitacao" placeholder="Ex: 10"><br>
 
     <label>Junção (%):</label><br>
-    <input type="number" id="cfgJuncao" placeholder="Ex: 20"><br>
+    <input type="number" id="cfgJuncao" placeholder="Ex: 15"><br>
 
     <label>Atraso (%):</label><br>
     <input type="number" id="cfgAtraso" placeholder="Ex: 10"><br>
@@ -71,7 +71,7 @@
     <h3>Gerar Mensagem</h3>
 
     <label>Setor:</label><br>
-    <select id="setorMensagem">
+    <select id="setorMensagem" onchange="mostrarCampos()">
         <option value="">Selecione...</option>
         <option value="play1">Play 1</option>
         <option value="play2">Play 2</option>
@@ -79,8 +79,23 @@
         <option value="play6">Play 6</option>
     </select><br>
 
-    <label>Valor da dívida:</label><br>
-    <input type="number" id="divida" placeholder="Ex: 3820.30"><br>
+    <!-- CAMPOS EXCLUSIVOS PARA PLAY 1, 2 e 3 -->
+    <div id="camposParcelas" style="display:none;">
+        <label>Total de parcelas:</label><br>
+        <input type="number" id="totalParcelas" placeholder="Ex: 20"><br>
+
+        <label>Valor de cada parcela:</label><br>
+        <input type="number" id="valorParcela" placeholder="Ex: 249.00"><br>
+
+        <label>Parcelas em atraso:</label><br>
+        <input type="number" id="parcelasAtraso" placeholder="Ex: 5"><br>
+    </div>
+
+    <!-- CAMPO ANTIGO PARA PLAY6 -->
+    <div id="campoDivida" style="display:none;">
+        <label>Valor total da dívida:</label><br>
+        <input type="number" id="divida" placeholder="Ex: 3820.30"><br>
+    </div>
 
     <button onclick="gerarMensagem()">Gerar Mensagem</button>
 
@@ -96,6 +111,19 @@ function openTab(tab) {
 
     document.getElementById(tab).classList.add("active");
     event.target.classList.add("active");
+}
+
+/* Mostrar campos conforme setor */
+function mostrarCampos() {
+    const setor = document.getElementById("setorMensagem").value;
+
+    if (["play1", "play2", "play3"].includes(setor)) {
+        document.getElementById("camposParcelas").style.display = "block";
+        document.getElementById("campoDivida").style.display = "none";
+    } else {
+        document.getElementById("camposParcelas").style.display = "none";
+        document.getElementById("campoDivida").style.display = "block";
+    }
 }
 
 /* ========== SALVAR CONFIGURAÇÃO ========== */
@@ -135,14 +163,59 @@ carregarConfigAtual();
 /* ========== GERAR MENSAGEM ========== */
 async function gerarMensagem() {
     const setor = document.getElementById("setorMensagem").value;
+    const snap = await db.collection("config").doc(setor).get();
+
+    if (!snap.exists) return alert("Configuração não encontrada!");
+    const cfg = snap.data();
+
+    /* ==============================
+          SETORES PLAY 1 / 2 / 3
+    =============================== */
+    if (["play1", "play2", "play3"].includes(setor)) {
+        const totalParcelas = Number(document.getElementById("totalParcelas").value);
+        const valorParcela = Number(document.getElementById("valorParcela").value);
+        const parcelasAtraso = Number(document.getElementById("parcelasAtraso").value);
+
+        if (!totalParcelas || !valorParcela || !parcelasAtraso)
+            return alert("Preencha todos os campos das parcelas!");
+
+        /* Cálculo 1 — Quitação */
+        const valorAtraso = valorParcela * parcelasAtraso;
+        const valorQuitacao = valorAtraso - (valorAtraso * cfg.quitacao / 100);
+
+        /* Cálculo 2 — Junção */
+        const parcelasJuncao = parcelasAtraso + 1;
+        const valorJuncao = valorParcela * parcelasJuncao;
+        const valorJuncaoFinal = valorJuncao - (valorJuncao * cfg.juncao / 100);
+
+        let mensagem =
+`Segue opções disponíveis:
+
+📌 Total de parcelas do contrato: *${totalParcelas}*
+📌 Valor por parcela: *R$ ${valorParcela.toFixed(2)}*
+📌 Parcelas em atraso: *${parcelasAtraso}*
+
+1️⃣ *Quitação (${cfg.quitacao}% desc.):*
+Valor original das parcelas atrasadas: R$ ${valorAtraso.toFixed(2)}
+Valor final com desconto: *R$ ${valorQuitacao.toFixed(2)}*
+
+2️⃣ *Junção (${cfg.juncao}% desc.):*
+Parcelas consideradas: ${parcelasJuncao}
+Valor original: R$ ${valorJuncao.toFixed(2)}
+Valor final com desconto: *R$ ${valorJuncaoFinal.toFixed(2)}*
+
+Qual opção prefere seguir?`;
+
+        document.getElementById("resultado").innerText = mensagem;
+        navigator.clipboard.writeText(mensagem);
+        return;
+    }
+
+    /* ==============================
+          SETOR PLAY 6 (antigo)
+    =============================== */
     const divida = parseFloat(document.getElementById("divida").value);
 
-    if (!setor || !divida) return alert("Preencha tudo!");
-
-    const snap = await db.collection("config").doc(setor).get();
-    if (!snap.exists) return alert("Configuração não encontrada!");
-
-    const cfg = snap.data();
     let mensagem = `Valor do débito atualizado: *R$ ${divida.toFixed(2)}*\n\n`;
 
     if (cfg.quitacao > 0) {
@@ -161,9 +234,7 @@ async function gerarMensagem() {
     }
 
     mensagem += "Qual opção prefere para negociar hoje?";
-
     document.getElementById("resultado").innerText = mensagem;
-    navigator.clipboard.writeText(mensagem);
 }
 
 </script>
