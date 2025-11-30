@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Mensagens</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h2>Gerador de Mensagens</h2>
+
+<label>Setor:</label><br>
+<select id="setor">
+    <option value="">Selecione...</option>
+    <option value="play1">Play 1</option>
+    <option value="play2">Play 2</option>
+    <option value="play3">Play 3</option>
+    <option value="play6">Play 6</option>
+</select>
+
+<br><br>
+
+<label>Valor da dívida:</label><br>
+<input type="number" id="divida" placeholder="Ex: 3820.30">
+
+<br><br>
+<button onclick="gerar()">Gerar Mensagem</button>
+
+<div id="resultado" class="msg-box"></div>
+
+<script>
+
+async function gerar() {
+    const setor = document.getElementById("setor").value;
+    const divida = parseFloat(document.getElementById("divida").value);
+
+    if (!setor || !divida) return alert("Preencha tudo!");
+
+    const ref = db.collection("config").doc(setor);
+    const snap = await ref.get();
+
+    if (!snap.exists) return alert("Configuração não encontrada!");
+
+    const cfg = snap.data();
+
+    let mensagem = `Valor do débito atualizado: *R$ ${divida.toFixed(2)}*\n\n`;
+
+    if (cfg.quitacao !== undefined) {
+        const valorQuit = divida - divida * (cfg.quitacao / 100);
+        mensagem += `1️⃣ *Quitação:* R$ ${valorQuit.toFixed(2)}\n\n`;
+    }
+
+    if (cfg.juncao !== undefined) {
+        const valorJun = divida - divida * (cfg.juncao / 100);
+        mensagem += `2️⃣ *Junção:* R$ ${valorJun.toFixed(2)}\n\n`;
+    }
+
+    if (cfg.atraso !== undefined) {
+        const valorAtr = divida - divida * (cfg.atraso / 100);
+        mensagem += `3️⃣ *Atraso:* R$ ${valorAtr.toFixed(2)}\n\n`;
+    }
+
+    mensagem += "Qual opção prefere para negociar hoje?";
+
+    document.getElementById("resultado").innerText = mensagem;
+
+    navigator.clipboard.writeText(mensagem);
+}
+
+</script>
+
+</body>
+</html>
