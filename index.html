@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Negociador de Mensagens</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Negociador de Mensagens</h1>
+
+  <label for="setor">Selecione o setor:</label>
+  <select id="setor">
+    <option value="play1">Play 1</option>
+    <option value="play2">Play 2</option>
+    <option value="play3">Play 3</option>
+    <option value="play6">Play 6</option>
+    <option value="playmarilia">Play Marília</option>
+  </select>
+
+  <label for="valor">Valor do débito:</label>
+  <input type="number" id="valor" placeholder="Ex: 1000">
+
+  <button id="gerar">Gerar Mensagem</button>
+
+  <h2>Mensagem Gerada:</h2>
+  <textarea id="mensagem" rows="8" cols="50" readonly></textarea>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- Seu arquivo firebase.js -->
+  <script src="firebase.js"></script>
+
+  <script>
+    const setor = document.getElementById("setor");
+    const valor = document.getElementById("valor");
+    const gerar = document.getElementById("gerar");
+    const mensagem = document.getElementById("mensagem");
+
+    const descontos = {
+      play1: { atraso: 0, juncao: 10, quitacao: 30 },
+      play2: { atraso: 10, juncao: 15, quitacao: 40 },
+      play3: { atraso: 15, quitacao: 50 },
+      play6: { quitacao: 50 }
+    };
+
+    function calcular(valor, percentual) {
+      return (valor * (100 - percentual) / 100).toFixed(2);
+    }
+
+    gerar.addEventListener("click", () => {
+      const v = Number(valor.value);
+      const s = setor.value;
+      if (!v) {
+        alert("Digite o valor do débito!");
+        return;
+      }
+
+      let msg = `Valor do débito atualizado: ~*R$ ${v.toFixed(2)}*~ ⚠️\n\n`;
+
+      if (descontos[s].quitacao !== undefined)
+        msg += `1️⃣ Quitação à vista: R$ ${calcular(v, descontos[s].quitacao)}\n`;
+
+      if (descontos[s].juncao !== undefined)
+        msg += `2️⃣ Junção de parcelas: R$ ${calcular(v, descontos[s].juncao)}\n`;
+
+      if (descontos[s].atraso !== undefined)
+        msg += `3️⃣ Parcela em atraso: R$ ${calcular(v, descontos[s].atraso)}\n`;
+
+      msg += `\nQual a melhor opção para negociar hoje?`;
+
+      mensagem.value = msg;
+      mensagem.select();
+      document.execCommand('copy');
+      alert("Mensagem copiada!");
+    });
+  </script>
+</body>
+</html>
