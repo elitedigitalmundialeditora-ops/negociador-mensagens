@@ -3,71 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <title>Gerador de Mensagens</title>
+
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="firebase.js"></script>
-    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .tabs { display: flex; gap: 30px; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; background: #ccc; border-radius: 6px; cursor: pointer; }
+        .tab.active { background: #007bff; color: white; }
+        .page { display: none; }
+        .page.active { display: block; }
+        input, select { padding: 8px; width: 250px; margin-bottom: 10px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { opacity: 0.9; }
+        .msg-box { white-space: pre-line; margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #f5f5f5; }
+    </style>
 </head>
 <body>
 
 <h2>Gerador de Mensagens</h2>
 
-<label>Setor:</label><br>
-<select id="setor">
-    <option value="">Selecione...</option>
-    <option value="play1">Play 1</option>
-    <option value="play2">Play 2</option>
-    <option value="play3">Play 3</option>
-    <option value="play6">Play 6</option>
-</select>
+<!-- TABS -->
+<div class="tabs">
+    <div class="tab active" onclick="openTab('config')">Configurações</div>
+    <div class="tab" onclick="openTab('mensagens')">Mensagens</div>
+</div>
 
-<br><br>
+<!-- ============================
+      ABA CONFIGURAÇÕES
+============================= -->
+<div id="config" class="page active">
 
-<label>Valor da dívida:</label><br>
-<input type="number" id="divida" placeholder="Ex: 3820.30">
+    <h3>Configurações por Setor</h3>
 
-<br><br>
-<button onclick="gerar()">Gerar Mensagem</button>
+    <label>Setor:</label><br>
+    <select id="setorCfg">
+        <option value="play1">Play 1</option>
+        <option value="play2">Play 2</option>
+        <option value="play3">Play 3</option>
+        <option value="play6">Play 6</option>
+    </select><br>
 
-<div id="resultado" class="msg-box"></div>
+    <label>Quitação (%):</label><br>
+    <input type="number" id="cfgQuitacao" placeholder="Ex: 30"><br>
+
+    <label>Junção (%):</label><br>
+    <input type="number" id="cfgJuncao" placeholder="Ex: 20"><br>
+
+    <label>Atraso (%):</label><br>
+    <input type="number" id="cfgAtraso" placeholder="Ex: 10"><br>
+
+    <button onclick="salvarConfig()">Salvar Configuração</button>
+
+    <h4>Configuração atual do setor:</h4>
+    <pre id="cfgAtual"></pre>
+</div>
+
+<!-- ============================
+      ABA MENSAGENS
+============================= -->
+<div id="mensagens" class="page">
+
+    <h3>Gerar Mensagem</h3>
+
+    <label>Setor:</label><br>
+    <select id="setorMensagem">
+        <option value="">Selecione...</option>
+        <option value="play1">Play 1</option>
+        <option value="play2">Play 2</option>
+        <option value="play3">Play 3</option>
+        <option value="play6">Play 6</option>
+    </select><br>
+
+    <label>Valor da dívida:</label><br>
+    <input type="number" id="divida" placeholder="Ex: 3820.30"><br>
+
+    <button onclick="gerarMensagem()">Gerar Mensagem</button>
+
+    <div id="resultado" class="msg-box"></div>
+</div>
 
 <script>
 
-async function gerar() {
-    const setor = document.getElementById("setor").value;
+/* ========== TABS ========== */
+function openTab(tab) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+
+    document.getElementById(tab).classList.add("active");
+    event.target.classList.add("active");
+}
+
+/* ========== SALVAR CONFIGURAÇÃO ========== */
+async function salvarConfig() {
+    const setor = document.getElementById("setorCfg").value;
+
+    const quitacao = Number(document.getElementById("cfgQuitacao").value);
+    const juncao = Number(document.getElementById("cfgJuncao").value);
+    const atraso = Number(document.getElementById("cfgAtraso").value);
+
+    await db.collection("config").doc(setor).set({
+        quitacao,
+        juncao,
+        atraso
+    });
+
+    alert("Configuração salva!");
+    carregarConfigAtual();
+}
+
+/* ========== MOSTRAR CONFIG ATUAL ========== */
+async function carregarConfigAtual() {
+    const setor = document.getElementById("setorCfg").value;
+    const snap = await db.collection("config").doc(setor).get();
+
+    if (!snap.exists) {
+        document.getElementById("cfgAtual").innerText = "Nenhuma configuração salva para este setor.";
+        return;
+    }
+
+    document.getElementById("cfgAtual").innerText = JSON.stringify(snap.data(), null, 2);
+}
+
+document.getElementById("setorCfg").addEventListener("change", carregarConfigAtual);
+carregarConfigAtual();
+
+/* ========== GERAR MENSAGEM ========== */
+async function gerarMensagem() {
+    const setor = document.getElementById("setorMensagem").value;
     const divida = parseFloat(document.getElementById("divida").value);
 
     if (!setor || !divida) return alert("Preencha tudo!");
 
-    const ref = db.collection("config").doc(setor);
-    const snap = await ref.get();
-
+    const snap = await db.collection("config").doc(setor).get();
     if (!snap.exists) return alert("Configuração não encontrada!");
 
     const cfg = snap.data();
-
     let mensagem = `Valor do débito atualizado: *R$ ${divida.toFixed(2)}*\n\n`;
 
-    if (cfg.quitacao !== undefined) {
-        const valorQuit = divida - divida * (cfg.quitacao / 100);
-        mensagem += `1️⃣ *Quitação:* R$ ${valorQuit.toFixed(2)}\n\n`;
+    if (cfg.quitacao > 0) {
+        let valor = divida - divida * (cfg.quitacao / 100);
+        mensagem += `1️⃣ *Quitação (${cfg.quitacao}%):* R$ ${valor.toFixed(2)}\n\n`;
     }
 
-    if (cfg.juncao !== undefined) {
-        const valorJun = divida - divida * (cfg.juncao / 100);
-        mensagem += `2️⃣ *Junção:* R$ ${valorJun.toFixed(2)}\n\n`;
+    if (cfg.juncao > 0) {
+        let valor = divida - divida * (cfg.juncao / 100);
+        mensagem += `2️⃣ *Junção (${cfg.juncao}%):* R$ ${valor.toFixed(2)}\n\n`;
     }
 
-    if (cfg.atraso !== undefined) {
-        const valorAtr = divida - divida * (cfg.atraso / 100);
-        mensagem += `3️⃣ *Atraso:* R$ ${valorAtr.toFixed(2)}\n\n`;
+    if (cfg.atraso > 0) {
+        let valor = divida - divida * (cfg.atraso / 100);
+        mensagem += `3️⃣ *Atraso (${cfg.atraso}%):* R$ ${valor.toFixed(2)}\n\n`;
     }
 
     mensagem += "Qual opção prefere para negociar hoje?";
 
     document.getElementById("resultado").innerText = mensagem;
-
     navigator.clipboard.writeText(mensagem);
 }
 
