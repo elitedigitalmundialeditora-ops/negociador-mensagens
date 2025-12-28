@@ -504,11 +504,11 @@ tr:hover td {
 /* ===== BADGES DOS SETORES ===== */
 .setor-badge {
   display: inline-block;
-  padding: 4px 12px;
+  padding: 4px 8px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  margin-left: 10px;
+  margin-left: 8px;
   color: white;
 }
 
@@ -611,6 +611,11 @@ tr:hover td {
   border-color: var(--warning);
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
+
+/* ===== TABELA DE DESCONTOS COM 4 LINHAS ===== */
+#linhaTabelaPix, #linhaCalcPix {
+  transition: all 0.35s ease;
+}
 </style>
 </head>
 <body>
@@ -624,7 +629,7 @@ tr:hover td {
 </div>
 
 <div class="alerta">
-  ⚠️ ATENÇÃO: Verifique as informações do cliente antes de confirmar qualquer pagamento.
+  ATENÇÃO: Verifique as informações do cliente antes de confirmar qualquer pagamento.
 </div>
 
 <div class="container">
@@ -709,6 +714,10 @@ tr:hover td {
         <tr class="linhaConfig3 desconto-animado">
           <td>Anuidade</td>
           <td id="tabela3">-</td>
+        </tr>
+        <tr id="linhaTabelaPix" class="desconto-animado">
+          <td>PIX Automático</td>
+          <td id="tabela4">-</td>
         </tr>
       </table>
     </div>
@@ -798,16 +807,20 @@ tr:hover td {
               <th>%</th>
             </tr>
             <tr class="linhaCalc1 desconto-animado">
-              <td>Quitação</td>
+              <td id="calcD1-t">Quitação</td>
               <td id="calcD1">-</td>
             </tr>
             <tr class="linhaCalc2 desconto-animado">
-              <td>Junção</td>
+              <td id="calcD2-t">Junção</td>
               <td id="calcD2">-</td>
             </tr>
             <tr class="linhaCalc3 desconto-animado">
-              <td>Anuidade</td>
+              <td id="calcD3-t">Anuidade</td>
               <td id="calcD3">-</td>
+            </tr>
+            <tr id="linhaCalcPix" class="desconto-animado">
+              <td id="calcD4-t">PIX Automático</td>
+              <td id="calcD4">-</td>
             </tr>
           </table>
         </div>
@@ -1027,6 +1040,17 @@ function carregarDescontos() {
     document.getElementById("configPadrao").classList.add("hidden");
     document.getElementById("configPlayEmDia").classList.add("hidden");
 
+    let linha2 = document.querySelector(".linhaConfig2");
+    let linha3 = document.querySelector(".linhaConfig3");
+
+    if (setor === "Play6") {
+        linha2.style.display = "none";
+        linha3.style.display = "none";
+    } else {
+        linha2.style.display = "";
+        linha3.style.display = "";
+    }
+
     if (setor === "PlayEmDia") {
         document.getElementById("configPlayEmDia").classList.remove("hidden");
         document.getElementById("pedQuitacao").value = descontos.c1 || 0;
@@ -1047,6 +1071,14 @@ function atualizarTabelaConfigUI() {
     document.getElementById("tabela1").innerText = descontos.c1 || "-";
     document.getElementById("tabela2").innerText = descontos.c2 || "-";
     document.getElementById("tabela3").innerText = descontos.c3 || "-";
+
+    const linhaPix = document.getElementById("linhaTabelaPix");
+    if (document.getElementById("setorConfig").value === "PlayEmDia") {
+        linhaPix.style.display = "";
+        document.getElementById("tabela4").innerText = descontos.c4 || "-";
+    } else {
+        linhaPix.style.display = "none";
+    }
 }
 
 function atualizarTabela() {
@@ -1085,9 +1117,28 @@ function ajustarCampos() {
     let setor = document.getElementById("setor").value;
     descontos = descontosSetores[setor];
 
+    let l2 = document.querySelector(".linhaCalc2");
+    let l3 = document.querySelector(".linhaCalc3");
+
+    if (setor === "Play6") {
+        l2.style.display = "none";
+        l3.style.display = "none";
+    } else {
+        l2.style.display = "";
+        l3.style.display = "";
+    }
+
     document.getElementById("calcD1").innerText = descontos.c1 || "-";
     document.getElementById("calcD2").innerText = descontos.c2 || "-";
     document.getElementById("calcD3").innerText = descontos.c3 || "-";
+
+    const linhaCalcPix = document.getElementById("linhaCalcPix");
+    if (setor === "PlayEmDia") {
+        linhaCalcPix.style.display = "";
+        document.getElementById("calcD4").innerText = descontos.c4 || "-";
+    } else {
+        linhaCalcPix.style.display = "none";
+    }
 
     document.getElementById("camposPadrao").classList.add("hidden");
     document.getElementById("camposPlayEmDia").classList.add("hidden");
@@ -1121,19 +1172,37 @@ function gerarMensagens() {
         let q = parseFloat(document.getElementById("pedQtdParcelas").value) || 0;
         let total = v * q;
 
+        // cálculos
         let quit = total * (1 - descontos.c1 / 100);
         let quit12 = quit / 12;
+        let v2 = v * 2, v2d = v2 * (1 - descontos.c2 / 100);
+        let v3 = v * 12, v3d = v3 * (1 - descontos.c3 / 100);
+        let pix = v * (1 - descontos.c4 / 100);
 
+        // se tiver menos que 14 parcelas → sem anuidade
         if (q < 14) {
             msg = `No momento você tem *${q} parcelas* restantes no valor de *R$ ${formatarMoeda(v)}*. 
 
 1️⃣ - *QUITAÇÃO* à vista de *R$ ${formatarMoeda(total)}* por apenas *R$ ${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x R$ ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
 
+2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *R$ ${formatarMoeda(v * 2)}* por *R$ ${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
+
+3️⃣ - *PIX AUTOMÁTICO* em *${q}x R$ ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
+
 *Gostaria de aproveitar? Digite a melhor opção!*`;
-        } else {
+        } 
+        // se tiver 14 parcelas ou mais → com anuidade
+        else {
+            let v3div12 = v3d / 12;
             msg = `No momento você tem *${q} parcelas* restantes no valor de *R$ ${formatarMoeda(v)}*.
 
 1️⃣ - *QUITAÇÃO* à vista de *R$ ${formatarMoeda(total)}* por apenas *R$ ${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x R$ ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
+
+2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *R$ ${formatarMoeda(v * 2)}* por *R$ ${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
+
+3️⃣ - *ANUIDADE* pague 12 parcelas de *R$ ${formatarMoeda(v3)}* por *R$ ${formatarMoeda(v3d)}* no PIX ou em 12x de *R$ ${formatarMoeda(v3div12)}* no cartão. Vencimento: HOJE
+
+4️⃣ - *PIX AUTOMÁTICO* em *${q}x R$ ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
 
 *Gostaria de aproveitar? Digite a melhor opção!*`;
         }
@@ -1143,13 +1212,14 @@ function gerarMensagens() {
         let quit = Math.ceil(total * (1 - descontos.c1 / 100));
         let quit12 = Math.ceil(quit / 12);
 
-        msg = `Valor do débito atualizado: ~*R$ ${juros}*~ ⚠️ 
+        msg = `Valor do débito atualizado: *R$ ${juros}* ⚠️ 
 
 1️⃣ Quitação no PIX: *R$ ${quit},00 vencimento HOJE* 💠
 2️⃣ Quitação no Cartão: até em 12x de *R$ ${quit12},00 podendo ser de terceiros* 💳
 3️⃣ *Contraproposta da parte do Cliente*
 
 *Qual a melhor opção para negociar hoje e receber o desconto?*`;
+
     } else {
         let total = parseFloat(document.getElementById("valorTotal").value) || 0;
         let vp = parseFloat(document.getElementById("valorParcelaUnica").value) || 0;
