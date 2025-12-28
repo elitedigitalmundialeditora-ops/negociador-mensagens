@@ -11,9 +11,10 @@
   --primary: #4361ee;
   --secondary: #7209b7;
   --accent: #f72585;
-  --success: #4cc9f0;
-  --warning: #fca311;
-  --danger: #ff4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --receptivo: #3b82f6;
   
   /* Tema CLARO */
   --bg: #f8f9ff;
@@ -120,15 +121,16 @@ body.dark .btn-theme .moon {
 /* ===== BOTÕES PRINCIPAIS ===== */
 .nav-buttons {
   display: flex;
-  gap: 15px;
+  gap: 10px;
   padding: 0 30px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .nav-button {
   background: var(--card);
   border: 2px solid var(--border);
-  padding: 14px 28px;
+  padding: 12px 20px;
   border-radius: 12px;
   font-weight: 600;
   color: var(--text);
@@ -136,14 +138,18 @@ body.dark .btn-theme .moon {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+  flex: 1;
+  min-width: 160px;
+  justify-content: center;
 }
 
 .nav-button:hover {
   border-color: var(--primary);
   color: var(--primary);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(67, 97, 238, 0.15);
 }
 
@@ -152,6 +158,10 @@ body.dark .btn-theme .moon {
   color: white;
   border-color: transparent;
   box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+}
+
+.nav-button.receptivo.active {
+  background: linear-gradient(135deg, var(--receptivo), var(--success));
 }
 
 /* ===== ALERTA ===== */
@@ -285,21 +295,22 @@ input:focus, select:focus {
   display: flex;
   gap: 15px;
   margin: 20px 0;
+  flex-wrap: wrap;
 }
 
 .action-button {
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
   border: none;
-  padding: 16px 28px;
+  padding: 14px 24px;
   border-radius: 12px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
   position: relative;
   overflow: hidden;
@@ -310,23 +321,31 @@ input:focus, select:focus {
   box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
 }
 
-.action-button::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
+.action-button.success {
+  background: linear-gradient(135deg, var(--success), #059669);
 }
 
-.action-button:hover::after {
-  left: 100%;
+.action-button.warning {
+  background: linear-gradient(135deg, var(--warning), #d97706);
+}
+
+.action-button.receptivo {
+  background: linear-gradient(135deg, var(--receptivo), #2563eb);
+}
+
+.action-button.danger {
+  background: linear-gradient(135deg, var(--danger), #b91c1c);
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* ===== RESULTADO ===== */
-#resultado {
+#resultado, #resultadoReceptivo {
   background: var(--panel);
   border: 2px solid var(--border);
   border-radius: 12px;
@@ -416,6 +435,22 @@ tr:hover td {
   font-weight: bold;
 }
 
+/* ===== STATUS DO ACORDO ===== */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 10px;
+  color: white;
+}
+
+.status-ativo { background: var(--success); }
+.status-atraso { background: var(--warning); }
+.status-quitado { background: var(--primary); }
+.status-cancelado { background: var(--danger); }
+
 /* ===== LAYOUT RESPONSIVO ===== */
 @media (max-width: 1024px) {
   .container {
@@ -455,6 +490,10 @@ tr:hover td {
   .card {
     padding: 20px;
   }
+  
+  .nav-button {
+    min-width: 100%;
+  }
 }
 
 /* ===== UTILIDADES ===== */
@@ -478,6 +517,7 @@ tr:hover td {
 .Play3 { background: var(--accent); }
 .Play6 { background: var(--warning); }
 .PlayEmDia { background: var(--success); }
+.Receptivo { background: var(--receptivo); }
 
 /* ===== RODAPÉ ===== */
 #rodape {
@@ -489,6 +529,87 @@ tr:hover td {
   background: var(--card);
   border-top: 1px solid var(--border);
   transition: all 0.3s;
+}
+
+/* ===== CARD DE INFORMAÇÕES DO ACORDO ===== */
+.acordo-info {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  border-left: 5px solid var(--receptivo);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.info-value {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ===== CARD DE DESCONTOS ===== */
+.desconto-card {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  border-left: 5px solid var(--warning);
+}
+
+.desconto-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.desconto-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.desconto-label {
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.desconto-input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.desconto-input:focus {
+  outline: none;
+  border-color: var(--warning);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
 </style>
 </head>
@@ -503,16 +624,19 @@ tr:hover td {
 </div>
 
 <div class="alerta">
-  ⚠️ ATENÇÃO: Verifique se os descontos estão configurados corretamente antes de enviar as mensagens.
+  ⚠️ ATENÇÃO: Verifique as informações do cliente antes de confirmar qualquer pagamento.
 </div>
 
 <div class="container">
   <div class="nav-buttons">
     <button class="nav-button active" onclick="mostrarTab('config')">
-      ⚙️ Configuração de Descontos
+      ⚙️ Configuração
     </button>
     <button class="nav-button" onclick="mostrarTab('calculos')">
-      📊 Cálculos e Mensagens
+      📊 Cálculos
+    </button>
+    <button class="nav-button receptivo" onclick="mostrarTab('receptivo')">
+      📞 Receptivo
     </button>
   </div>
 
@@ -528,7 +652,7 @@ tr:hover td {
             <option value="Play1">Play 1 <span class="setor-badge Play1"></span></option>
             <option value="Play2">Play 2 <span class="setor-badge Play2"></span></option>
             <option value="Play3">Play 3 <span class="setor-badge Play3"></span></option>
-            <option value="Play6 / Marília">Play 6 / Marília <span class="setor-badge Play6 / Marília"></span></option>
+            <option value="Play6">Play 6 / Marília <span class="setor-badge Play6"></span></option>
             <option value="PlayEmDia">Play em dia <span class="setor-badge PlayEmDia"></span></option>
           </select>
         </div>
@@ -586,10 +710,6 @@ tr:hover td {
           <td>Anuidade</td>
           <td id="tabela3">-</td>
         </tr>
-        <tr id="linhaTabelaPix" class="desconto-animado hidden">
-          <td>PIX Automático</td>
-          <td id="tabela4">-</td>
-        </tr>
       </table>
     </div>
   </div>
@@ -609,7 +729,7 @@ tr:hover td {
                 <option value="Play1">Play 1 <span class="setor-badge Play1"></span></option>
                 <option value="Play2">Play 2 <span class="setor-badge Play2"></span></option>
                 <option value="Play3">Play 3 <span class="setor-badge Play3"></span></option>
-                <option value="Play 6 / Marília">Play 6 / Marília <span class="setor-badge Play6 / Marília"></span></option>
+                <option value="Play6">Play 6 / Marília <span class="setor-badge Play6"></span></option>
                 <option value="PlayEmDia">Play em dia <span class="setor-badge PlayEmDia"></span></option>
               </select>
             </div>
@@ -663,7 +783,6 @@ tr:hover td {
           </div>
 
           <div id="resultado">
-            <!-- Aqui aparecerá a mensagem gerada -->
             As mensagens aparecerão aqui após clicar em "Gerar Mensagens"
           </div>
         </div>
@@ -679,30 +798,154 @@ tr:hover td {
               <th>%</th>
             </tr>
             <tr class="linhaCalc1 desconto-animado">
-              <td id="calcD1-t">Quitação</td>
+              <td>Quitação</td>
               <td id="calcD1">-</td>
             </tr>
             <tr class="linhaCalc2 desconto-animado">
-              <td id="calcD2-t">Junção</td>
+              <td>Junção</td>
               <td id="calcD2">-</td>
             </tr>
             <tr class="linhaCalc3 desconto-animado">
-              <td id="calcD3-t">Anuidade</td>
+              <td>Anuidade</td>
               <td id="calcD3">-</td>
             </tr>
-            <tr id="linhaCalcPix" class="desconto-animado hidden">
-              <td id="calcD4-t">PIX Automático</td>
-              <td id="calcD4">-</td>
-            </tr>
           </table>
-          
-          <div style="margin-top: 20px; padding: 15px; background: var(--panel); border-radius: 10px;">
-            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 14px;">💡 Dica Rápida</h4>
-            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">
-              Os descontos são aplicados automaticamente conforme o setor selecionado.
-            </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ABA: RECEPTIVO ===== -->
+  <div id="receptivo" class="tab">
+    <div class="card">
+      <h2>📞 Atendimento Receptivo</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">
+        Use esta aba para atender clientes que entram em contato para fazer pagamentos de acordos ativos.
+      </p>
+
+      <!-- Card de Descontos -->
+      <div class="desconto-card">
+        <h3>🔧 Configurar Percentuais de Desconto</h3>
+        
+        <div class="desconto-row">
+          <div class="desconto-label">
+            <span>📉 Quitação (%):</span>
+          </div>
+          <div>
+            <input type="number" id="percentualQuitacao" class="desconto-input" value="30" min="0" max="100" onchange="calcularValoresReceptivo()">
           </div>
         </div>
+        
+        <div class="desconto-row">
+          <div class="desconto-label">
+            <span>🔄 Junção (%):</span>
+            <small style="font-size: 12px; color: var(--text-muted);">(parcela do mês + a vencer)</small>
+          </div>
+          <div>
+            <input type="number" id="percentualJuncao" class="desconto-input" value="10" min="0" max="100" onchange="calcularValoresReceptivo()">
+          </div>
+        </div>
+        
+        <div class="desconto-row">
+          <div class="desconto-label">
+            <span>⚠️ Atraso/Parcela a Vencer (%):</span>
+          </div>
+          <div>
+            <input type="number" id="percentualAtraso" class="desconto-input" value="5" min="0" max="100" onchange="calcularValoresReceptivo()">
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div>
+          <label>Status do Acordo:</label>
+          <select id="statusAcordo" onchange="atualizarBotoesStatus()">
+            <option value="ativo">Ativo (em dia)</option>
+            <option value="atraso">Com parcelas em atraso</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div>
+          <label>Valor Original do Acordo:</label>
+          <input type="number" id="valorAcordo" placeholder="R$ 0,00" oninput="calcularValoresReceptivo()">
+        </div>
+        <div>
+          <label>Valor da Parcela:</label>
+          <input type="number" id="valorParcelaAcordo" placeholder="R$ 0,00" oninput="calcularValoresReceptivo()">
+        </div>
+        <div>
+          <label>Parcelas Restantes:</label>
+          <input type="number" id="parcelasRestantes" placeholder="0" oninput="calcularValoresReceptivo()">
+        </div>
+      </div>
+
+      <div id="camposAtrasoReceptivo" class="input-group hidden">
+        <div>
+          <label>Quantidade de Parcelas em Atraso:</label>
+          <input type="number" id="qtdAtrasoReceptivo" placeholder="0" value="0" oninput="calcularValoresReceptivo()">
+        </div>
+      </div>
+
+      <!-- Card com informações calculadas -->
+      <div class="acordo-info">
+        <div class="info-row">
+          <span class="info-label">Status:</span>
+          <span class="info-value" id="infoStatus">
+            <span class="status-badge status-ativo">Em dia</span>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Parcelas restantes:</span>
+          <span class="info-value" id="infoParcelasRestantes">0</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Valor por parcela:</span>
+          <span class="info-value" id="infoValorParcela">R$ 0,00</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Total a pagar:</span>
+          <span class="info-value" id="infoTotalRestante">R$ 0,00</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Desconto para Quitação:</span>
+          <span class="info-value" id="infoDescontoQuitacao">0%</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Valor com Desconto:</span>
+          <span class="info-value" id="infoValorComDesconto">R$ 0,00</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Parcelas em 12x:</span>
+          <span class="info-value" id="infoParcelas12x">R$ 0,00</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Economia com Quitação:</span>
+          <span class="info-value" id="infoEconomia">R$ 0,00</span>
+        </div>
+      </div>
+
+      <h3>📋 Opções de Atendimento</h3>
+      
+      <div class="action-buttons">
+        <button class="action-button warning" id="btnComAtraso" onclick="gerarMensagemComAtraso()">
+          ⚠️ Mensagem com Parcelas em Atraso
+        </button>
+        <button class="action-button success" id="btnSemAtraso" onclick="gerarMensagemSemAtraso()">
+          ✅ Mensagem Acordo em Dia
+        </button>
+        <button class="action-button receptivo" onclick="gerarInfoAcordo()">
+          📊 Informações do Acordo
+        </button>
+        <button class="action-button" onclick="copiarMensagemReceptivo()">
+          📋 Copiar Mensagem
+        </button>
+      </div>
+
+      <div id="resultadoReceptivo">
+        <!-- Mensagens do receptivo aparecerão aqui -->
+        Selecione uma opção acima para gerar a mensagem apropriada.
       </div>
     </div>
   </div>
@@ -721,6 +964,11 @@ let descontosSetores = {
 };
 
 let descontos = {};
+let percentuaisReceptivo = {
+    quitacao: 30,
+    juncao: 10,
+    atraso: 5
+};
 
 // ===== CARREGAR DADOS SALVOS =====
 if (localStorage.getItem("descontosSetores")) {
@@ -728,6 +976,18 @@ if (localStorage.getItem("descontosSetores")) {
         descontosSetores = JSON.parse(localStorage.getItem("descontosSetores")); 
     } catch(e) {
         console.log("Erro ao carregar dados salvos, usando padrão.");
+    }
+}
+
+// Carregar percentuais do receptivo
+if (localStorage.getItem("percentuaisReceptivo")) {
+    try {
+        percentuaisReceptivo = JSON.parse(localStorage.getItem("percentuaisReceptivo"));
+        document.getElementById("percentualQuitacao").value = percentuaisReceptivo.quitacao;
+        document.getElementById("percentualJuncao").value = percentuaisReceptivo.juncao;
+        document.getElementById("percentualAtraso").value = percentuaisReceptivo.atraso;
+    } catch(e) {
+        console.log("Erro ao carregar percentuais do receptivo, usando padrão.");
     }
 }
 
@@ -764,22 +1024,8 @@ function carregarDescontos() {
     let setor = document.getElementById("setorConfig").value;
     descontos = { ...descontosSetores[setor] };
 
-    // Mostrar/ocultar campos conforme setor
     document.getElementById("configPadrao").classList.add("hidden");
     document.getElementById("configPlayEmDia").classList.add("hidden");
-
-    let linha2 = document.querySelector(".linhaConfig2");
-    let linha3 = document.querySelector(".linhaConfig3");
-    let linhaPix = document.getElementById("linhaTabelaPix");
-
-    if (setor === "Play6") {
-        linha2.style.display = "none";
-        linha3.style.display = "none";
-        linhaPix.classList.add("hidden");
-    } else {
-        linha2.style.display = "";
-        linha3.style.display = "";
-    }
 
     if (setor === "PlayEmDia") {
         document.getElementById("configPlayEmDia").classList.remove("hidden");
@@ -787,13 +1033,11 @@ function carregarDescontos() {
         document.getElementById("ped2parcelas").value = descontos.c2 || 0;
         document.getElementById("ped3parcelas").value = descontos.c3 || 0;
         document.getElementById("pedPixAuto").value = descontos.c4 || 0;
-        linhaPix.classList.remove("hidden");
     } else {
         document.getElementById("configPadrao").classList.remove("hidden");
         document.getElementById("descontoQuitacao").value = descontos.c1 || 0;
         document.getElementById("descontoJuncao").value = descontos.c2 || 0;
         document.getElementById("descontoAtraso").value = descontos.c3 || 0;
-        linhaPix.classList.add("hidden");
     }
 
     atualizarTabelaConfigUI();
@@ -803,10 +1047,6 @@ function atualizarTabelaConfigUI() {
     document.getElementById("tabela1").innerText = descontos.c1 || "-";
     document.getElementById("tabela2").innerText = descontos.c2 || "-";
     document.getElementById("tabela3").innerText = descontos.c3 || "-";
-    
-    if (document.getElementById("setorConfig").value === "PlayEmDia") {
-        document.getElementById("tabela4").innerText = descontos.c4 || "-";
-    }
 }
 
 function atualizarTabela() {
@@ -845,20 +1085,10 @@ function ajustarCampos() {
     let setor = document.getElementById("setor").value;
     descontos = descontosSetores[setor];
 
-    // Atualizar tabela de descontos
     document.getElementById("calcD1").innerText = descontos.c1 || "-";
     document.getElementById("calcD2").innerText = descontos.c2 || "-";
     document.getElementById("calcD3").innerText = descontos.c3 || "-";
-    
-    let linhaCalcPix = document.getElementById("linhaCalcPix");
-    if (setor === "PlayEmDia") {
-        linhaCalcPix.classList.remove("hidden");
-        document.getElementById("calcD4").innerText = descontos.c4 || "-";
-    } else {
-        linhaCalcPix.classList.add("hidden");
-    }
 
-    // Mostrar/ocultar campos conforme setor
     document.getElementById("camposPadrao").classList.add("hidden");
     document.getElementById("camposPlayEmDia").classList.add("hidden");
     document.getElementById("campoValorAtualizado").classList.add("hidden");
@@ -877,9 +1107,8 @@ function ajustarCampos() {
 
 function gerarMensagens() {
     let setor = document.getElementById("setor").value;
-    let msg = "", total, vp, qtd, quit, quit12, juncao, atraso;
+    let msg = "";
 
-    // Formatação de valores em Reais
     const formatarMoeda = (valor) => {
         return valor.toLocaleString("pt-BR", { 
             minimumFractionDigits: 2, 
@@ -890,44 +1119,29 @@ function gerarMensagens() {
     if (setor === "PlayEmDia") {
         let v = parseFloat(document.getElementById("pedValorParcela").value) || 0;
         let q = parseFloat(document.getElementById("pedQtdParcelas").value) || 0;
-        total = v * q;
+        let total = v * q;
 
-        // Cálculos
         let quit = total * (1 - descontos.c1 / 100);
         let quit12 = quit / 12;
-        let v2 = v * 2, v2d = v2 * (1 - descontos.c2 / 100);
-        let v3 = v * 12, v3d = v3 * (1 - descontos.c3 / 100);
-        let pix = v * (1 - descontos.c4 / 100);
 
         if (q < 14) {
             msg = `No momento você tem *${q} parcelas* restantes no valor de *R$ ${formatarMoeda(v)}*. 
 
 1️⃣ - *QUITAÇÃO* à vista de *R$ ${formatarMoeda(total)}* por apenas *R$ ${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x R$ ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
 
-2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *R$ ${formatarMoeda(v * 2)}* por *R$ ${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
-
-3️⃣ - *PIX AUTOMÁTICO* em *${q}x R$ ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
-
 *Gostaria de aproveitar? Digite a melhor opção!*`;
         } else {
-            let v3div12 = v3d / 12;
             msg = `No momento você tem *${q} parcelas* restantes no valor de *R$ ${formatarMoeda(v)}*.
 
 1️⃣ - *QUITAÇÃO* à vista de *R$ ${formatarMoeda(total)}* por apenas *R$ ${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x R$ ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
 
-2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *R$ ${formatarMoeda(v * 2)}* por *R$ ${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
-
-3️⃣ - *ANUIDADE* pague 12 parcelas de *R$ ${formatarMoeda(v3)}* por *R$ ${formatarMoeda(v3d)}* no PIX ou em 12x de *R$ ${formatarMoeda(v3div12)}* no cartão. Vencimento: HOJE
-
-4️⃣ - *PIX AUTOMÁTICO* em *${q}x R$ ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
-
 *Gostaria de aproveitar? Digite a melhor opção!*`;
         }
     } else if (setor === "Play6") {
-        total = parseFloat(document.getElementById("valorTotal").value) || 0;
+        let total = parseFloat(document.getElementById("valorTotal").value) || 0;
         let juros = parseFloat(document.getElementById("valorComJuros").value) || 0;
-        quit = Math.ceil(total * (1 - descontos.c1 / 100));
-        quit12 = Math.ceil(quit / 12);
+        let quit = Math.ceil(total * (1 - descontos.c1 / 100));
+        let quit12 = Math.ceil(quit / 12);
 
         msg = `Valor do débito atualizado: ~*R$ ${juros}*~ ⚠️ 
 
@@ -937,15 +1151,15 @@ function gerarMensagens() {
 
 *Qual a melhor opção para negociar hoje e receber o desconto?*`;
     } else {
-        total = parseFloat(document.getElementById("valorTotal").value) || 0;
-        vp = parseFloat(document.getElementById("valorParcelaUnica").value) || 0;
-        qtd = parseFloat(document.getElementById("qtdAtraso").value) || 0;
+        let total = parseFloat(document.getElementById("valorTotal").value) || 0;
+        let vp = parseFloat(document.getElementById("valorParcelaUnica").value) || 0;
+        let qtd = parseFloat(document.getElementById("qtdAtraso").value) || 0;
         let atrasoTotal = vp * qtd;
         
-        quit = Math.ceil(total * (1 - descontos.c1 / 100));
-        quit12 = Math.ceil(quit / 12);
-        juncao = Math.ceil((atrasoTotal + vp) * (1 - descontos.c2 / 100));
-        atraso = Math.ceil(atrasoTotal * (1 - descontos.c3 / 100));
+        let quit = Math.ceil(total * (1 - descontos.c1 / 100));
+        let quit12 = Math.ceil(quit / 12);
+        let juncao = Math.ceil((atrasoTotal + vp) * (1 - descontos.c2 / 100));
+        let atraso = Math.ceil(atrasoTotal * (1 - descontos.c3 / 100));
 
         if (setor === "Play1" || setor === "Play2") {
             msg = `1️⃣ *Quitação* no boleto à vista ou PIX: *R$ ${quit},00 vencimento HOJE* 💠 (+ 3 meses de acesso)
@@ -973,6 +1187,217 @@ Qual a melhor opção para negociar hoje e receber o desconto?`;
     document.getElementById("resultado").innerText = msg;
 }
 
+// ===== FUNÇÕES DO RECEPTIVO =====
+function salvarPercentuaisReceptivo() {
+    percentuaisReceptivo = {
+        quitacao: parseFloat(document.getElementById("percentualQuitacao").value) || 0,
+        juncao: parseFloat(document.getElementById("percentualJuncao").value) || 0,
+        atraso: parseFloat(document.getElementById("percentualAtraso").value) || 0
+    };
+    localStorage.setItem("percentuaisReceptivo", JSON.stringify(percentuaisReceptivo));
+}
+
+function atualizarBotoesStatus() {
+    let status = document.getElementById("statusAcordo").value;
+    let btnComAtraso = document.getElementById("btnComAtraso");
+    let btnSemAtraso = document.getElementById("btnSemAtraso");
+    let camposAtraso = document.getElementById("camposAtrasoReceptivo");
+    
+    if (status === "atraso") {
+        // Cliente com atraso: mostrar botão "com atraso", ocultar "sem atraso"
+        btnComAtraso.style.display = "flex";
+        btnSemAtraso.style.display = "none";
+        btnComAtraso.disabled = false;
+        btnSemAtraso.disabled = true;
+        camposAtraso.classList.remove("hidden");
+        
+        // Atualizar badge
+        document.getElementById("infoStatus").innerHTML = '<span class="status-badge status-atraso">Com atraso</span>';
+    } else {
+        // Cliente em dia: mostrar botão "sem atraso", ocultar "com atraso"
+        btnComAtraso.style.display = "none";
+        btnSemAtraso.style.display = "flex";
+        btnComAtraso.disabled = true;
+        btnSemAtraso.disabled = false;
+        camposAtraso.classList.add("hidden");
+        
+        // Atualizar badge
+        document.getElementById("infoStatus").innerHTML = '<span class="status-badge status-ativo">Em dia</span>';
+    }
+    
+    calcularValoresReceptivo();
+}
+
+function calcularValoresReceptivo() {
+    // Salvar percentuais
+    salvarPercentuaisReceptivo();
+    
+    let valorParcela = parseFloat(document.getElementById("valorParcelaAcordo").value) || 0;
+    let parcelasRestantes = parseFloat(document.getElementById("parcelasRestantes").value) || 0;
+    let status = document.getElementById("statusAcordo").value;
+    
+    // Atualizar informações básicas
+    document.getElementById("infoParcelasRestantes").textContent = parcelasRestantes;
+    document.getElementById("infoValorParcela").textContent = 
+        `R$ ${valorParcela.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    
+    // Calcular valores
+    let valorTotalRestante = valorParcela * parcelasRestantes;
+    let desconto = percentuaisReceptivo.quitacao;
+    let valorComDesconto = valorTotalRestante * (1 - desconto / 100);
+    let parcelas12x = valorComDesconto / 12;
+    let economia = valorTotalRestante - valorComDesconto;
+    
+    // Atualizar informações
+    document.getElementById("infoTotalRestante").textContent = 
+        `R$ ${valorTotalRestante.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    document.getElementById("infoDescontoQuitacao").textContent = `${desconto}%`;
+    document.getElementById("infoValorComDesconto").textContent = 
+        `R$ ${valorComDesconto.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    document.getElementById("infoParcelas12x").textContent = 
+        `R$ ${parcelas12x.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    document.getElementById("infoEconomia").textContent = 
+        `R$ ${economia.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+}
+
+function gerarMensagemComAtraso() {
+    let valorParcela = parseFloat(document.getElementById("valorParcelaAcordo").value) || 0;
+    let parcelasRestantes = parseFloat(document.getElementById("parcelasRestantes").value) || 0;
+    let qtdAtraso = parseFloat(document.getElementById("qtdAtrasoReceptivo").value) || 0;
+    
+    if (qtdAtraso === 0) {
+        alert("Para usar esta opção, o acordo deve ter parcelas em atraso. Altere o status para 'Com parcelas em atraso' e informe a quantidade.");
+        return;
+    }
+    
+    let valorTotal = valorParcela * parcelasRestantes;
+    let descontoQuitacao = percentuaisReceptivo.quitacao;
+    let valorComDesconto = valorTotal * (1 - descontoQuitacao / 100);
+    let quit12 = Math.ceil(valorComDesconto / 12);
+    
+    let atrasoTotal = valorParcela * qtdAtraso;
+    let descontoAtraso = percentuaisReceptivo.atraso;
+    let atrasoComDesconto = Math.ceil(atrasoTotal * (1 - descontoAtraso / 100));
+    
+    let descontoJuncao = percentuaisReceptivo.juncao;
+    let juncao = Math.ceil((atrasoTotal + valorParcela) * (1 - descontoJuncao / 100));
+    
+    let msg = `📊 *SITUAÇÃO DO ACORDO COM ATRASO*
+
+• Status: *Com ${qtdAtraso} parcela(s) em atraso*
+• Parcelas restantes: *${parcelasRestantes}*
+• Valor por parcela: *R$ ${valorParcela.toFixed(2)}*
+• Total a pagar: *R$ ${valorTotal.toFixed(2)}*
+
+🎯 *OPÇÕES DE NEGOCIAÇÃO*
+
+1️⃣ *QUITAÇÃO* no boleto à vista ou PIX: *R$ ${Math.ceil(valorComDesconto)},00 vencimento HOJE* 💠 
+
+2️⃣ *QUITAÇÃO* no Cartão de crédito: até em 12x de *R$ ${quit12},00* podendo ser de terceiros 💳
+
+3️⃣ Parcela em *atraso + a vencer* por *R$ ${juncao},00 via pix/cartão HOJE*
+
+4️⃣ *Parcela em atraso* por *R$ ${atrasoComDesconto},00 via pix/cartão HOJE*
+
+💡 *Qual a melhor opção para negociar hoje e resolver o débito?*`;
+    
+    document.getElementById("resultadoReceptivo").innerText = msg;
+}
+
+function gerarMensagemSemAtraso() {
+    let valorParcela = parseFloat(document.getElementById("valorParcelaAcordo").value) || 0;
+    let parcelasRestantes = parseFloat(document.getElementById("parcelasRestantes").value) || 0;
+    
+    let valorTotal = valorParcela * parcelasRestantes;
+    let descontoQuitacao = percentuaisReceptivo.quitacao;
+    let valorComDesconto = valorTotal * (1 - descontoQuitacao / 100);
+    let quit12 = Math.ceil(valorComDesconto / 12);
+    
+    let descontoJuncao = percentuaisReceptivo.juncao;
+    let juncao = Math.ceil((valorParcela * 2) * (1 - descontoJuncao / 100));
+    
+    let descontoAtraso = percentuaisReceptivo.atraso;
+    let parcelaAVencer = Math.ceil(valorParcela * (1 - descontoAtraso / 100));
+    
+    let msg = `📊 *SITUAÇÃO DO ACORDO EM DIA*
+
+• Status: *Ativo (em dia)*
+• Parcelas restantes: *${parcelasRestantes}*
+• Valor por parcela: *R$ ${valorParcela.toFixed(2)}*
+• Total a pagar: *R$ ${valorTotal.toFixed(2)}*
+
+🎯 *OPÇÕES DE NEGOCIAÇÃO*
+
+1️⃣ *QUITAÇÃO* no boleto à vista ou PIX: *R$ ${Math.ceil(valorComDesconto)},00 vencimento HOJE* 💠
+
+2️⃣ *QUITAÇÃO* no Cartão de crédito: até em 12x de *R$ ${quit12},00* podendo ser de terceiros 💳
+
+3️⃣ Parcela a *vencer + próximo mês* por *R$ ${juncao},00 via pix/cartão HOJE*
+
+4️⃣ *Parcela a vencer* por *R$ ${parcelaAVencer},00 via pix/cartão HOJE*
+
+💡 *Qual a melhor opção para negociar hoje e antecipar seu acordo?*`;
+    
+    document.getElementById("resultadoReceptivo").innerText = msg;
+}
+
+function gerarInfoAcordo() {
+    let valorParcela = parseFloat(document.getElementById("valorParcelaAcordo").value) || 0;
+    let parcelasRestantes = parseFloat(document.getElementById("parcelasRestantes").value) || 0;
+    let qtdAtraso = parseFloat(document.getElementById("qtdAtrasoReceptivo").value) || 0;
+    let status = document.getElementById("statusAcordo").value;
+    
+    let valorTotal = valorParcela * parcelasRestantes;
+    let desconto = percentuaisReceptivo.quitacao;
+    let valorComDesconto = valorTotal * (1 - desconto / 100);
+    let parcelas12x = valorComDesconto / 12;
+    let economia = valorTotal - valorComDesconto;
+    
+    let msg = `📊 *SITUAÇÃO ATUAL DO ACORDO*
+
+• Status: *${status === "ativo" ? "Ativo (em dia)" : "Com parcelas em atraso"}*
+• Parcelas restantes: *${parcelasRestantes}*
+• Valor por parcela: *R$ ${valorParcela.toFixed(2)}*
+• Total a pagar: *R$ ${valorTotal.toFixed(2)}*`;
+    
+    if (status === "atraso" && qtdAtraso > 0) {
+        msg += `\n• Parcelas em atraso: *${qtdAtraso}*`;
+        msg += `\n• Valor em atraso: *R$ ${(valorParcela * qtdAtraso).toFixed(2)}*`;
+    }
+    
+    msg += `\n\n🎯 *PROPOSTA DE QUITAÇÃO ANTECIPADA*
+
+• Desconto especial: *${desconto}%*
+• Valor com desconto: *R$ ${valorComDesconto.toFixed(2)}*
+• Ou em *12x de R$ ${parcelas12x.toFixed(2)}* no cartão
+
+💡 *VANTAGENS:*
+✓ Economia imediata de *R$ ${economia.toFixed(2)}*
+✓ Encerramento do acordo
+✓ Sem preocupações com vencimentos futuros
+✓ Declaração de Quitação de forma IMEDIATA
+
+🔧 *OUTRAS OPÇÕES:*
+• Junção (parcela atual + próxima): desconto de *${percentuaisReceptivo.juncao}%*
+• Pagamento avulso: desconto de *${percentuaisReceptivo.atraso}%*`;
+    
+    document.getElementById("resultadoReceptivo").innerText = msg;
+}
+
+function copiarMensagemReceptivo() {
+    let texto = document.getElementById("resultadoReceptivo").innerText;
+    
+    navigator.clipboard.writeText(texto).then(() => {
+        let notif = document.getElementById("notificacao");
+        notif.classList.add("show");
+        setTimeout(() => notif.classList.remove("show"), 2000);
+    }).catch(err => {
+        console.error("Erro ao copiar: ", err);
+        alert("Erro ao copiar a mensagem. Tente selecionar e copiar manualmente.");
+    });
+}
+
+// ===== FUNÇÕES DE CÓPIA E TEMA =====
 function copiarMensagem() {
     let texto = document.getElementById("resultado").innerText;
     
@@ -986,7 +1411,6 @@ function copiarMensagem() {
     });
 }
 
-// ===== TEMA CLARO/ESCURO =====
 function toggleTheme() {
     document.body.classList.toggle("dark");
     localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
@@ -1003,6 +1427,8 @@ function inicializar() {
     carregarDescontos();
     ajustarCampos();
     animarTabela();
+    atualizarBotoesStatus();
+    calcularValoresReceptivo();
 }
 
 // Executar ao carregar a página
