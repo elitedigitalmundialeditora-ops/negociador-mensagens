@@ -1,243 +1,1018 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Gerador de Mensagens</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de Cobranças - Play</title>
+<style>
+/* ===== VARIÁVEIS DE CORES ===== */
+:root {
+  /* Cores vibrantes principais */
+  --primary: #4361ee;
+  --secondary: #7209b7;
+  --accent: #f72585;
+  --success: #4cc9f0;
+  --warning: #fca311;
+  --danger: #ff4444;
+  
+  /* Tema CLARO */
+  --bg: #f8f9ff;
+  --card: #ffffff;
+  --panel: #edf2ff;
+  --border: #dbe4ff;
+  --text: #1a1a2e;
+  --text-muted: #4a5568;
+  
+  /* Tema ESCURO */
+  --bg-dark: #0a0e2a;
+  --card-dark: #1a1f3d;
+  --panel-dark: #252a4a;
+  --border-dark: #2d3748;
+  --text-dark: #e2e8f0;
+  --text-muted-dark: #a0aec0;
+}
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="firebase.js"></script>
+/* ===== TEMA CLARO (padrão) ===== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.4s ease;
+  min-height: 100vh;
+}
 
-    <style>
-        body { font-family: Arial; margin: 20px; }
-        .tabs { display: flex; gap: 30px; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; background: #ccc; border-radius: 6px; cursor: pointer; }
-        .tab.active { background: #007bff; color: white; }
-        .page { display: none; }
-        .page.active { display: block; }
-        input, select { padding: 8px; width: 250px; margin-bottom: 10px; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { opacity: 0.9; }
-        .msg-box { white-space: pre-line; margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #f5f5f5; }
-    </style>
+/* ===== TEMA ESCURO ===== */
+body.dark {
+  --bg: var(--bg-dark);
+  --card: var(--card-dark);
+  --panel: var(--panel-dark);
+  --border: var(--border-dark);
+  --text: var(--text-dark);
+  --text-muted: var(--text-muted-dark);
+}
+
+/* ===== HEADER ===== */
+.topo {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 20px 30px;
+  border-radius: 0 0 20px 20px;
+  margin-bottom: 30px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topo h1 {
+  color: white;
+  font-size: 2rem;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== BOTÃO TEMA ===== */
+.btn-theme {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.btn-theme:hover {
+  transform: rotate(20deg) scale(1.1);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-theme .icon {
+  position: absolute;
+  font-size: 20px;
+  transition: all 0.4s ease;
+}
+
+.btn-theme .sun {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+.btn-theme .moon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+body.dark .btn-theme .sun {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+body.dark .btn-theme .moon {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+/* ===== BOTÕES PRINCIPAIS ===== */
+.nav-buttons {
+  display: flex;
+  gap: 15px;
+  padding: 0 30px;
+  margin-bottom: 20px;
+}
+
+.nav-button {
+  background: var(--card);
+  border: 2px solid var(--border);
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: var(--text);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.nav-button:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(67, 97, 238, 0.15);
+}
+
+.nav-button.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+}
+
+/* ===== ALERTA ===== */
+.alerta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(255, 244, 244, 0.8), rgba(255, 229, 229, 0.9));
+  border-left: 5px solid var(--danger);
+  border-radius: 12px;
+  margin: 0 30px 20px;
+  color: #d32f2f;
+  font-weight: 600;
+  animation: pulse 2s infinite;
+}
+
+body.dark .alerta {
+  background: linear-gradient(135deg, rgba(255, 77, 77, 0.1), rgba(255, 77, 77, 0.15));
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.alerta::before {
+  content: "⚠️";
+  font-size: 18px;
+}
+
+/* ===== CONTAINER PRINCIPAL ===== */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+/* ===== TABS ===== */
+.tab {
+  display: none;
+  padding: 20px;
+}
+
+.tab.active {
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: linear-gradient(145deg, var(--card), var(--panel));
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(67, 97, 238, 0.15);
+}
+
+/* ===== TÍTULOS ===== */
+h2 {
+  color: var(--text);
+  font-size: 1.6rem;
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--primary);
+  display: inline-block;
+}
+
+h3 {
+  color: var(--text);
+  font-size: 1.3rem;
+  margin: 0 0 15px 0;
+}
+
+/* ===== FORMULÁRIOS ===== */
+.input-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+input, select {
+  width: 100%;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  color: var(--text);
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+  background: var(--card);
+}
+
+/* ===== BOTÕES DE AÇÃO ===== */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.action-button {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  padding: 16px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+}
+
+.action-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.action-button:hover::after {
+  left: 100%;
+}
+
+/* ===== RESULTADO ===== */
+#resultado {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  white-space: pre-line;
+  color: var(--text);
+  font-size: 14.5px;
+  line-height: 1.6;
+  font-family: 'Courier New', monospace;
+  min-height: 150px;
+}
+
+/* ===== TABELAS ===== */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 20px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--card);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+th {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  border: none;
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+  color: var(--text);
+}
+
+tr:hover td {
+  background: var(--panel);
+}
+
+/* ===== ANIMAÇÕES ===== */
+.desconto-animado {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.35s ease;
+}
+
+.desconto-animado.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== NOTIFICAÇÃO ===== */
+#notificacao {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, var(--success), var(--primary));
+  color: white;
+  padding: 18px 26px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(67, 97, 238, 0.4);
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 1000;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+#notificacao.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+#notificacao::before {
+  content: "✓";
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* ===== LAYOUT RESPONSIVO ===== */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 20px;
+  }
+  
+  .nav-buttons {
+    flex-direction: column;
+    padding: 0 20px;
+  }
+  
+  .tab {
+    padding: 15px;
+  }
+  
+  .input-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .topo {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .topo h1 {
+    font-size: 1.7rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+}
+
+/* ===== UTILIDADES ===== */
+.hidden {
+  display: none !important;
+}
+
+/* ===== BADGES DOS SETORES ===== */
+.setor-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 10px;
+  color: white;
+}
+
+.Play1 { background: var(--primary); }
+.Play2 { background: var(--secondary); }
+.Play3 { background: var(--accent); }
+.Play6 { background: var(--warning); }
+.PlayEmDia { background: var(--success); }
+
+/* ===== RODAPÉ ===== */
+#rodape {
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+  font-size: 14px;
+  color: var(--text-muted);
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  transition: all 0.3s;
+}
+</style>
 </head>
 <body>
 
-<h2>Gerador de Mensagens</h2>
-
-<!-- TABS -->
-<div class="tabs">
-    <div class="tab active" onclick="openTab('config')">Configurações</div>
-    <div class="tab" onclick="openTab('mensagens')">Mensagens</div>
+<div class="topo">
+  <h1>📊 Dashboard de Cobranças - Play</h1>
+  <button class="btn-theme" onclick="toggleTheme()" title="Alternar tema">
+    <span class="icon sun">☀️</span>
+    <span class="icon moon">🌙</span>
+  </button>
 </div>
 
-<!-- ============================
-      ABA CONFIGURAÇÕES
-============================= -->
-<div id="config" class="page active">
-
-    <h3>Configurações por Setor</h3>
-
-    <label>Setor:</label><br>
-    <select id="setorCfg">
-        <option value="play1">Play 1</option>
-        <option value="play2">Play 2</option>
-        <option value="play3">Play 3</option>
-        <option value="play6">Play 6</option>
-    </select><br>
-
-    <label>Quitação (%):</label><br>
-    <input type="number" id="cfgQuitacao" placeholder="Ex: 10"><br>
-
-    <label>Junção (%):</label><br>
-    <input type="number" id="cfgJuncao" placeholder="Ex: 15"><br>
-
-    <label>Atraso (%):</label><br>
-    <input type="number" id="cfgAtraso" placeholder="Ex: 10"><br>
-
-    <button onclick="salvarConfig()">Salvar Configuração</button>
-
-    <h4>Configuração atual do setor:</h4>
-    <pre id="cfgAtual"></pre>
+<div class="alerta">
+  ⚠️ ATENÇÃO: Verifique se os descontos estão configurados corretamente antes de enviar as mensagens.
 </div>
 
-<!-- ============================
-      ABA MENSAGENS
-============================= -->
-<div id="mensagens" class="page">
+<div class="container">
+  <div class="nav-buttons">
+    <button class="nav-button active" onclick="mostrarTab('config')">
+      ⚙️ Configuração de Descontos
+    </button>
+    <button class="nav-button" onclick="mostrarTab('calculos')">
+      📊 Cálculos e Mensagens
+    </button>
+  </div>
 
-    <h3>Gerar Mensagem</h3>
+  <!-- Aba Configuração -->
+  <div id="config" class="tab active">
+    <div class="card">
+      <h2>Configurar Descontos (%)</h2>
+      
+      <div class="input-group">
+        <div>
+          <label>Setor:</label>
+          <select id="setorConfig" onchange="carregarDescontosComAnimacao()">
+            <option value="Play1">Play 1 <span class="setor-badge Play1">P1</span></option>
+            <option value="Play2">Play 2 <span class="setor-badge Play2">P2</span></option>
+            <option value="Play3">Play 3 <span class="setor-badge Play3">P3</span></option>
+            <option value="Play6">Play 6 <span class="setor-badge Play6">P6</span></option>
+            <option value="PlayEmDia">Play em dia <span class="setor-badge PlayEmDia">PED</span></option>
+          </select>
+        </div>
+      </div>
 
-    <label>Setor:</label><br>
-    <select id="setorMensagem" onchange="mostrarCampos()">
-        <option value="">Selecione...</option>
-        <option value="play1">Play 1</option>
-        <option value="play2">Play 2</option>
-        <option value="play3">Play 3</option>
-        <option value="play6">Play 6</option>
-    </select><br>
+      <div id="configPadrao" class="input-group">
+        <div>
+          <label>Quitação (%):</label>
+          <input type="number" id="descontoQuitacao" onchange="atualizarTabela()" min="0" max="100">
+        </div>
+        <div>
+          <label>Junção (%):</label>
+          <input type="number" id="descontoJuncao" onchange="atualizarTabela()" min="0" max="100">
+        </div>
+        <div>
+          <label>Atraso (%):</label>
+          <input type="number" id="descontoAtraso" onchange="atualizarTabela()" min="0" max="100">
+        </div>
+      </div>
 
-    <!-- CAMPOS EXCLUSIVOS PARA PLAY 1, 2 e 3 -->
-    <div id="camposParcelas" style="display:none;">
-        <label>Total de parcelas:</label><br>
-        <input type="number" id="totalParcelas" placeholder="Ex: 20"><br>
+      <div id="configPlayEmDia" class="input-group hidden">
+        <div>
+          <label>Quitação (%):</label>
+          <input type="number" id="pedQuitacao" onchange="atualizarTabela()" min="0" max="100">
+        </div>
+        <div>
+          <label>2 parcelas (%):</label>
+          <input type="number" id="ped2parcelas" onchange="atualizarTabela()" min="0" max="100">
+        </div>
+        <div>
+          <label>Anuidade (%):</label>
+          <input type="number" id="ped3parcelas" onchange="atualizarTabela()" min="0" max="100">
+        </div>
+        <div>
+          <label>PIX Automático (%):</label>
+          <input type="number" id="pedPixAuto" onchange="atualizarTabela()" min="0" max="100">
+        </div>
+      </div>
 
-        <label>Valor de cada parcela:</label><br>
-        <input type="number" id="valorParcela" placeholder="Ex: 249.00"><br>
-
-        <label>Parcelas em atraso:</label><br>
-        <input type="number" id="parcelasAtraso" placeholder="Ex: 5"><br>
+      <h3>📋 Descontos Configurados</h3>
+      <table>
+        <tr>
+          <th>Tipo de Desconto</th>
+          <th>Valor (%)</th>
+        </tr>
+        <tr class="linhaConfig1 desconto-animado">
+          <td>Quitação</td>
+          <td id="tabela1">-</td>
+        </tr>
+        <tr class="linhaConfig2 desconto-animado">
+          <td>Junção</td>
+          <td id="tabela2">-</td>
+        </tr>
+        <tr class="linhaConfig3 desconto-animado">
+          <td>Anuidade</td>
+          <td id="tabela3">-</td>
+        </tr>
+        <tr id="linhaTabelaPix" class="desconto-animado hidden">
+          <td>PIX Automático</td>
+          <td id="tabela4">-</td>
+        </tr>
+      </table>
     </div>
+  </div>
 
-    <!-- CAMPO ANTIGO PARA PLAY6 -->
-    <div id="campoDivida" style="display:none;">
-        <label>Valor total da dívida:</label><br>
-        <input type="number" id="divida" placeholder="Ex: 3820.30"><br>
+  <!-- Aba Cálculos -->
+  <div id="calculos" class="tab">
+    <div style="display: flex; flex-wrap: wrap; gap: 30px;">
+      <!-- Campos à esquerda -->
+      <div style="flex: 1; min-width: 300px;">
+        <div class="card">
+          <h2>📝 Calcular Negociação</h2>
+          
+          <div class="input-group">
+            <div>
+              <label>Setor:</label>
+              <select id="setor" onchange="ajustarCamposComAnimacao()">
+                <option value="Play1">Play 1 <span class="setor-badge Play1">P1</span></option>
+                <option value="Play2">Play 2 <span class="setor-badge Play2">P2</span></option>
+                <option value="Play3">Play 3 <span class="setor-badge Play3">P3</span></option>
+                <option value="Play6">Play 6 <span class="setor-badge Play6">P6</span></option>
+                <option value="PlayEmDia">Play em dia <span class="setor-badge PlayEmDia">PED</span></option>
+              </select>
+            </div>
+          </div>
+
+          <div id="camposPadrao">
+            <div class="input-group">
+              <div>
+                <label>Valor total (sem juros):</label>
+                <input type="number" id="valorTotal" placeholder="R$ 0,00">
+              </div>
+            </div>
+            
+            <div id="camposAtraso" class="input-group">
+              <div>
+                <label>Valor de cada parcela:</label>
+                <input type="number" id="valorParcelaUnica" placeholder="R$ 0,00">
+              </div>
+              <div>
+                <label>Quantidade em atraso:</label>
+                <input type="number" id="qtdAtraso" placeholder="0">
+              </div>
+            </div>
+            
+            <div id="campoValorAtualizado" class="input-group hidden">
+              <div>
+                <label>Valor atualizado (com juros):</label>
+                <input type="number" id="valorComJuros" placeholder="R$ 0,00">
+              </div>
+            </div>
+          </div>
+
+          <div id="camposPlayEmDia" class="input-group hidden">
+            <div>
+              <label>Valor da parcela:</label>
+              <input type="number" id="pedValorParcela" placeholder="R$ 0,00">
+            </div>
+            <div>
+              <label>Quantidade de parcelas:</label>
+              <input type="number" id="pedQtdParcelas" placeholder="0">
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button class="action-button" onclick="gerarMensagens()">
+              ✉️ Gerar Mensagens
+            </button>
+            <button class="action-button" onclick="copiarMensagem()">
+              📋 Copiar Mensagem
+            </button>
+          </div>
+
+          <div id="resultado">
+            <!-- Aqui aparecerá a mensagem gerada -->
+            As mensagens aparecerão aqui após clicar em "Gerar Mensagens"
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela à direita -->
+      <div style="flex: 0 0 300px; position: sticky; top: 20px; align-self: flex-start;">
+        <div class="card">
+          <h3>🎯 Descontos Aplicados</h3>
+          <table>
+            <tr>
+              <th>Tipo</th>
+              <th>%</th>
+            </tr>
+            <tr class="linhaCalc1 desconto-animado">
+              <td id="calcD1-t">Quitação</td>
+              <td id="calcD1">-</td>
+            </tr>
+            <tr class="linhaCalc2 desconto-animado">
+              <td id="calcD2-t">Junção</td>
+              <td id="calcD2">-</td>
+            </tr>
+            <tr class="linhaCalc3 desconto-animado">
+              <td id="calcD3-t">Anuidade</td>
+              <td id="calcD3">-</td>
+            </tr>
+            <tr id="linhaCalcPix" class="desconto-animado hidden">
+              <td id="calcD4-t">PIX Automático</td>
+              <td id="calcD4">-</td>
+            </tr>
+          </table>
+          
+          <div style="margin-top: 20px; padding: 15px; background: var(--panel); border-radius: 10px;">
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 14px;">💡 Dica Rápida</h4>
+            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">
+              Os descontos são aplicados automaticamente conforme o setor selecionado.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <button onclick="gerarMensagem()">Gerar Mensagem</button>
-
-    <div id="resultado" class="msg-box"></div>
+  </div>
 </div>
+
+<div id="notificacao">Mensagem copiada com sucesso!</div>
 
 <script>
+// ===== VARIÁVEIS GLOBAIS =====
+let descontosSetores = {
+    Play1: { c1: 30, c2: 10, c3: 5 },
+    Play2: { c1: 30, c2: 10, c3: 5 },
+    Play3: { c1: 30, c2: 10, c3: 5 },
+    Play6: { c1: 30 },
+    PlayEmDia: { c1: 20, c2: 5, c3: 6, c4: 15 }
+};
 
-/* ========== TABS ========== */
-function openTab(tab) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+let descontos = {};
 
-    document.getElementById(tab).classList.add("active");
-    event.target.classList.add("active");
-}
-
-/* Mostrar campos conforme setor */
-function mostrarCampos() {
-    const setor = document.getElementById("setorMensagem").value;
-
-    if (["play1", "play2", "play3"].includes(setor)) {
-        document.getElementById("camposParcelas").style.display = "block";
-        document.getElementById("campoDivida").style.display = "none";
-    } else {
-        document.getElementById("camposParcelas").style.display = "none";
-        document.getElementById("campoDivida").style.display = "block";
+// ===== CARREGAR DADOS SALVOS =====
+if (localStorage.getItem("descontosSetores")) {
+    try { 
+        descontosSetores = JSON.parse(localStorage.getItem("descontosSetores")); 
+    } catch(e) {
+        console.log("Erro ao carregar dados salvos, usando padrão.");
     }
 }
 
-/* ========== SALVAR CONFIGURAÇÃO ========== */
-async function salvarConfig() {
-    const setor = document.getElementById("setorCfg").value;
-
-    const quitacao = Number(document.getElementById("cfgQuitacao").value);
-    const juncao = Number(document.getElementById("cfgJuncao").value);
-    const atraso = Number(document.getElementById("cfgAtraso").value);
-
-    await db.collection("config").doc(setor).set({
-        quitacao,
-        juncao,
-        atraso
+// ===== FUNÇÕES DE ANIMAÇÃO =====
+function animarTabela() {
+    document.querySelectorAll(".desconto-animado").forEach(el => {
+        el.classList.remove("show");
+        setTimeout(() => el.classList.add("show"), 50);
     });
-
-    alert("Configuração salva!");
-    carregarConfigAtual();
 }
 
-/* ========== MOSTRAR CONFIG ATUAL ========== */
-async function carregarConfigAtual() {
-    const setor = document.getElementById("setorCfg").value;
-    const snap = await db.collection("config").doc(setor).get();
-
-    if (!snap.exists) {
-        document.getElementById("cfgAtual").innerText = "Nenhuma configuração salva para este setor.";
-        return;
-    }
-
-    document.getElementById("cfgAtual").innerText = JSON.stringify(snap.data(), null, 2);
+// ===== FUNÇÕES DE NAVEGAÇÃO =====
+function mostrarTab(tab) {
+    // Atualizar botões de navegação
+    document.querySelectorAll(".nav-button").forEach(btn => {
+        btn.classList.remove("active");
+    });
+    event.target.classList.add("active");
+    
+    // Mostrar tab selecionada
+    document.querySelectorAll(".tab").forEach(t => {
+        t.classList.remove("active");
+    });
+    document.getElementById(tab).classList.add("active");
 }
 
-document.getElementById("setorCfg").addEventListener("change", carregarConfigAtual);
-carregarConfigAtual();
-
-/* ========== GERAR MENSAGEM ========== */
-async function gerarMensagem() {
-    const setor = document.getElementById("setorMensagem").value;
-    const snap = await db.collection("config").doc(setor).get();
-
-    if (!snap.exists) return alert("Configuração não encontrada!");
-    const cfg = snap.data();
-
-    /* ==============================
-          SETORES PLAY 1 / 2 / 3
-    =============================== */
-    if (["play1", "play2", "play3"].includes(setor)) {
-        const totalParcelas = Number(document.getElementById("totalParcelas").value);
-        const valorParcela = Number(document.getElementById("valorParcela").value);
-        const parcelasAtraso = Number(document.getElementById("parcelasAtraso").value);
-
-        if (!totalParcelas || !valorParcela || !parcelasAtraso)
-            return alert("Preencha todos os campos das parcelas!");
-
-        /* Cálculo 1 — Quitação */
-        const valorAtraso = valorParcela * parcelasAtraso;
-        const valorQuitacao = valorAtraso - (valorAtraso * cfg.quitacao / 100);
-
-        /* Cálculo 2 — Junção */
-        const parcelasJuncao = parcelasAtraso + 1;
-        const valorJuncao = valorParcela * parcelasJuncao;
-        const valorJuncaoFinal = valorJuncao - (valorJuncao * cfg.juncao / 100);
-
-        let mensagem =
-`Segue opções disponíveis:
-
-📌 Total de parcelas do contrato: *${totalParcelas}*
-📌 Valor por parcela: *R$ ${valorParcela.toFixed(2)}*
-📌 Parcelas em atraso: *${parcelasAtraso}*
-
-1️⃣ *Quitação (${cfg.quitacao}% desc.):*
-Valor original das parcelas atrasadas: R$ ${valorAtraso.toFixed(2)}
-Valor final com desconto: *R$ ${valorQuitacao.toFixed(2)}*
-
-2️⃣ *Junção (${cfg.juncao}% desc.):*
-Parcelas consideradas: ${parcelasJuncao}
-Valor original: R$ ${valorJuncao.toFixed(2)}
-Valor final com desconto: *R$ ${valorJuncaoFinal.toFixed(2)}*
-
-Qual opção prefere seguir?`;
-
-        document.getElementById("resultado").innerText = mensagem;
-        navigator.clipboard.writeText(mensagem);
-        return;
-    }
-
-    /* ==============================
-          SETOR PLAY 6 (antigo)
-    =============================== */
-    const divida = parseFloat(document.getElementById("divida").value);
-
-    let mensagem = `Valor do débito atualizado: *R$ ${divida.toFixed(2)}*\n\n`;
-
-    if (cfg.quitacao > 0) {
-        let valor = divida - divida * (cfg.quitacao / 100);
-        mensagem += `1️⃣ *Quitação (${cfg.quitacao}%):* R$ ${valor.toFixed(2)}\n\n`;
-    }
-
-    if (cfg.juncao > 0) {
-        let valor = divida - divida * (cfg.juncao / 100);
-        mensagem += `2️⃣ *Junção (${cfg.juncao}%):* R$ ${valor.toFixed(2)}\n\n`;
-    }
-
-    if (cfg.atraso > 0) {
-        let valor = divida - divida * (cfg.atraso / 100);
-        mensagem += `3️⃣ *Atraso (${cfg.atraso}%):* R$ ${valor.toFixed(2)}\n\n`;
-    }
-
-    mensagem += "Qual opção prefere para negociar hoje?";
-    document.getElementById("resultado").innerText = mensagem;
+// ===== FUNÇÕES DE CONFIGURAÇÃO =====
+function carregarDescontosComAnimacao() {
+    carregarDescontos();
+    animarTabela();
 }
 
+function carregarDescontos() {
+    let setor = document.getElementById("setorConfig").value;
+    descontos = { ...descontosSetores[setor] };
+
+    // Mostrar/ocultar campos conforme setor
+    document.getElementById("configPadrao").classList.add("hidden");
+    document.getElementById("configPlayEmDia").classList.add("hidden");
+
+    let linha2 = document.querySelector(".linhaConfig2");
+    let linha3 = document.querySelector(".linhaConfig3");
+    let linhaPix = document.getElementById("linhaTabelaPix");
+
+    if (setor === "Play6") {
+        linha2.style.display = "none";
+        linha3.style.display = "none";
+        linhaPix.classList.add("hidden");
+    } else {
+        linha2.style.display = "";
+        linha3.style.display = "";
+    }
+
+    if (setor === "PlayEmDia") {
+        document.getElementById("configPlayEmDia").classList.remove("hidden");
+        document.getElementById("pedQuitacao").value = descontos.c1 || 0;
+        document.getElementById("ped2parcelas").value = descontos.c2 || 0;
+        document.getElementById("ped3parcelas").value = descontos.c3 || 0;
+        document.getElementById("pedPixAuto").value = descontos.c4 || 0;
+        linhaPix.classList.remove("hidden");
+    } else {
+        document.getElementById("configPadrao").classList.remove("hidden");
+        document.getElementById("descontoQuitacao").value = descontos.c1 || 0;
+        document.getElementById("descontoJuncao").value = descontos.c2 || 0;
+        document.getElementById("descontoAtraso").value = descontos.c3 || 0;
+        linhaPix.classList.add("hidden");
+    }
+
+    atualizarTabelaConfigUI();
+}
+
+function atualizarTabelaConfigUI() {
+    document.getElementById("tabela1").innerText = descontos.c1 || "-";
+    document.getElementById("tabela2").innerText = descontos.c2 || "-";
+    document.getElementById("tabela3").innerText = descontos.c3 || "-";
+    
+    if (document.getElementById("setorConfig").value === "PlayEmDia") {
+        document.getElementById("tabela4").innerText = descontos.c4 || "-";
+    }
+}
+
+function atualizarTabela() {
+    let setor = document.getElementById("setorConfig").value;
+
+    if (setor === "PlayEmDia") {
+        descontosSetores[setor] = {
+            c1: parseFloat(document.getElementById("pedQuitacao").value) || 0,
+            c2: parseFloat(document.getElementById("ped2parcelas").value) || 0,
+            c3: parseFloat(document.getElementById("ped3parcelas").value) || 0,
+            c4: parseFloat(document.getElementById("pedPixAuto").value) || 0
+        };
+    } else if (setor === "Play6") {
+        descontosSetores[setor] = { 
+            c1: parseFloat(document.getElementById("descontoQuitacao").value) || 0 
+        };
+    } else {
+        descontosSetores[setor] = {
+            c1: parseFloat(document.getElementById("descontoQuitacao").value) || 0,
+            c2: parseFloat(document.getElementById("descontoJuncao").value) || 0,
+            c3: parseFloat(document.getElementById("descontoAtraso").value) || 0
+        };
+    }
+    
+    localStorage.setItem("descontosSetores", JSON.stringify(descontosSetores));
+    carregarDescontosComAnimacao();
+}
+
+// ===== FUNÇÕES DE CÁLCULO =====
+function ajustarCamposComAnimacao() {
+    ajustarCampos();
+    animarTabela();
+}
+
+function ajustarCampos() {
+    let setor = document.getElementById("setor").value;
+    descontos = descontosSetores[setor];
+
+    // Atualizar tabela de descontos
+    document.getElementById("calcD1").innerText = descontos.c1 || "-";
+    document.getElementById("calcD2").innerText = descontos.c2 || "-";
+    document.getElementById("calcD3").innerText = descontos.c3 || "-";
+    
+    let linhaCalcPix = document.getElementById("linhaCalcPix");
+    if (setor === "PlayEmDia") {
+        linhaCalcPix.classList.remove("hidden");
+        document.getElementById("calcD4").innerText = descontos.c4 || "-";
+    } else {
+        linhaCalcPix.classList.add("hidden");
+    }
+
+    // Mostrar/ocultar campos conforme setor
+    document.getElementById("camposPadrao").classList.add("hidden");
+    document.getElementById("camposPlayEmDia").classList.add("hidden");
+    document.getElementById("campoValorAtualizado").classList.add("hidden");
+    document.getElementById("camposAtraso").classList.remove("hidden");
+
+    if (setor === "PlayEmDia") {
+        document.getElementById("camposPlayEmDia").classList.remove("hidden");
+    } else if (setor === "Play6") {
+        document.getElementById("camposPadrao").classList.remove("hidden");
+        document.getElementById("camposAtraso").classList.add("hidden");
+        document.getElementById("campoValorAtualizado").classList.remove("hidden");
+    } else {
+        document.getElementById("camposPadrao").classList.remove("hidden");
+    }
+}
+
+function gerarMensagens() {
+    let setor = document.getElementById("setor").value;
+    let msg = "", total, vp, qtd, quit, quit12, juncao, atraso;
+
+    // Formatação de valores em Reais
+    const formatarMoeda = (valor) => {
+        return valor.toLocaleString("pt-BR", { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        });
+    };
+
+    if (setor === "PlayEmDia") {
+        let v = parseFloat(document.getElementById("pedValorParcela").value) || 0;
+        let q = parseFloat(document.getElementById("pedQtdParcelas").value) || 0;
+        total = v * q;
+
+        // Cálculos
+        let quit = total * (1 - descontos.c1 / 100);
+        let quit12 = quit / 12;
+        let v2 = v * 2, v2d = v2 * (1 - descontos.c2 / 100);
+        let v3 = v * 12, v3d = v3 * (1 - descontos.c3 / 100);
+        let pix = v * (1 - descontos.c4 / 100);
+
+        if (q < 14) {
+            msg = `No momento você tem *${q} parcelas* restantes no valor de *R$ ${formatarMoeda(v)}*. 
+
+1️⃣ - *QUITAÇÃO* à vista de *R$ ${formatarMoeda(total)}* por apenas *R$ ${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x R$ ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
+
+2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *R$ ${formatarMoeda(v * 2)}* por *R$ ${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
+
+3️⃣ - *PIX AUTOMÁTICO* em *${q}x R$ ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
+
+*Gostaria de aproveitar? Digite a melhor opção!*`;
+        } else {
+            let v3div12 = v3d / 12;
+            msg = `No momento você tem *${q} parcelas* restantes no valor de *R$ ${formatarMoeda(v)}*.
+
+1️⃣ - *QUITAÇÃO* à vista de *R$ ${formatarMoeda(total)}* por apenas *R$ ${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x R$ ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
+
+2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *R$ ${formatarMoeda(v * 2)}* por *R$ ${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
+
+3️⃣ - *ANUIDADE* pague 12 parcelas de *R$ ${formatarMoeda(v3)}* por *R$ ${formatarMoeda(v3d)}* no PIX ou em 12x de *R$ ${formatarMoeda(v3div12)}* no cartão. Vencimento: HOJE
+
+4️⃣ - *PIX AUTOMÁTICO* em *${q}x R$ ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
+
+*Gostaria de aproveitar? Digite a melhor opção!*`;
+        }
+    } else if (setor === "Play6") {
+        total = parseFloat(document.getElementById("valorTotal").value) || 0;
+        let juros = parseFloat(document.getElementById("valorComJuros").value) || 0;
+        quit = Math.ceil(total * (1 - descontos.c1 / 100));
+        quit12 = Math.ceil(quit / 12);
+
+        msg = `Valor do débito atualizado: ~*R$ ${juros}*~ ⚠️ 
+
+1️⃣ Quitação no PIX: *R$ ${quit},00 vencimento HOJE* 💠
+2️⃣ Quitação no Cartão: até em 12x de *R$ ${quit12},00 podendo ser de terceiros* 💳
+3️⃣ *Contraproposta da parte do Cliente*
+
+*Qual a melhor opção para negociar hoje e receber o desconto?*`;
+    } else {
+        total = parseFloat(document.getElementById("valorTotal").value) || 0;
+        vp = parseFloat(document.getElementById("valorParcelaUnica").value) || 0;
+        qtd = parseFloat(document.getElementById("qtdAtraso").value) || 0;
+        let atrasoTotal = vp * qtd;
+        
+        quit = Math.ceil(total * (1 - descontos.c1 / 100));
+        quit12 = Math.ceil(quit / 12);
+        juncao = Math.ceil((atrasoTotal + vp) * (1 - descontos.c2 / 100));
+        atraso = Math.ceil(atrasoTotal * (1 - descontos.c3 / 100));
+
+        if (setor === "Play1" || setor === "Play2") {
+            msg = `1️⃣ *Quitação* no boleto à vista ou PIX: *R$ ${quit},00 vencimento HOJE* 💠 (+ 3 meses de acesso)
+
+2️⃣ *Quitação* no Cartão de crédito: até em 12x de *R$ ${quit12},00 podendo ser de terceiros 💳*
+
+3️⃣ Parcela em *atraso + a vencer* por *R$ ${juncao},00 via pix/cartão HOJE*
+
+4️⃣ *Parcela em atraso* por *R$ ${atraso},00 via pix/cartão HOJE*
+
+Qual a melhor opção para negociar hoje e receber o desconto?`;
+        } else if (setor === "Play3") {
+            msg = `1️⃣ *Quitação* no boleto à vista ou PIX: *R$ ${quit},00 vencimento HOJE* 💠 (+ 3 meses de acesso)
+
+2️⃣ *Quitação* no Cartão de crédito: até em 12x de *R$ ${quit12},00 podendo ser de terceiros 💳*
+
+3️⃣ *Parcela em atraso* por *R$ ${atraso},00 via pix/cartão HOJE*
+
+4️⃣ *Contraproposta da parte do Cliente*
+
+Qual a melhor opção para negociar hoje e receber o desconto?`;
+        }
+    }
+
+    document.getElementById("resultado").innerText = msg;
+}
+
+function copiarMensagem() {
+    let texto = document.getElementById("resultado").innerText;
+    
+    navigator.clipboard.writeText(texto).then(() => {
+        let notif = document.getElementById("notificacao");
+        notif.classList.add("show");
+        setTimeout(() => notif.classList.remove("show"), 2000);
+    }).catch(err => {
+        console.error("Erro ao copiar: ", err);
+        alert("Erro ao copiar a mensagem. Tente selecionar e copiar manualmente.");
+    });
+}
+
+// ===== TEMA CLARO/ESCURO =====
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
+}
+
+// ===== INICIALIZAÇÃO =====
+function inicializar() {
+    // Carregar tema salvo
+    if (localStorage.getItem("tema") === "dark") {
+        document.body.classList.add("dark");
+    }
+    
+    // Inicializar componentes
+    carregarDescontos();
+    ajustarCampos();
+    animarTabela();
+}
+
+// Executar ao carregar a página
+document.addEventListener("DOMContentLoaded", inicializar);
 </script>
+
+<!-- Rodapé -->
+<div id="rodape">
+    Criado e desenvolvido por <strong>paulo_silva</strong> e <strong>cleber_junior</strong> - Time Elite - 2025
+</div>
 
 </body>
 </html>
