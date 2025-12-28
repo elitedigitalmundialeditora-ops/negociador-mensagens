@@ -74,12 +74,52 @@ body.dark {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* ===== BOTÃO TEMA ===== */
+/* ===== BOTÕES DO TOPO ===== */
+.botoes-topo {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-dicas {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid black; /* corrigido: border não aceita "flex" */
+  padding: 15px 15px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease; /* ajustado para 0.3s para ser mais suave */
+  backdrop-filter: blur(10px);
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+  display: flex; /* corrigido: de "center" para "flex" */
+  justify-content: center; /* centraliza horizontalmente o conteúdo */
+  align-items: center; /* centraliza verticalmente */
+  gap: 00px; /* corrigido: removido o zero à esquerda */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center; /* garante que o texto fique centralizado */
+}
+
+.btn-dicas:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-dicas.ativo {
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.btn-dicas .icon-dicas {
+  font-size: 16px;
+}
+
 .btn-theme {
   background: rgba(255, 255, 255, 0.2);
-  border: none;
-  width: 44px;
-  height: 44px;
+  border: 1px solid black;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   cursor: pointer;
   display: grid;
@@ -91,6 +131,7 @@ body.dark {
 .btn-theme:hover {
   transform: rotate(20deg) scale(1.1);
   background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
 .btn-theme .icon {
@@ -145,13 +186,30 @@ body.dark .btn-theme .moon {
   flex: 1;
   min-width: 160px;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.7s;
+}
+
+.nav-button:hover::before {
+  left: 100%;
 }
 
 .nav-button:hover {
   border-color: var(--primary);
   color: var(--primary);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(67, 97, 238, 0.15);
+  box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
 }
 
 .nav-button.active {
@@ -165,33 +223,177 @@ body.dark .btn-theme .moon {
   background: linear-gradient(135deg, var(--receptivo), var(--success));
 }
 
-/* ===== ALERTA ===== */
+/* ===== ALERTA SEM ÍCONE ===== */
 .alerta {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, rgba(255, 244, 244, 0.8), rgba(255, 229, 229, 0.9));
-  border-left: 5px solid var(--danger);
-  border-radius: 12px;
-  margin: 0 30px 20px;
+  padding: 18px 25px;
+  background: linear-gradient(135deg, rgba(255, 244, 244, 0.95), rgba(255, 229, 229, 0.98));
+  border: 2px solid var(--danger);
+  border-radius: 10px;
+  margin: 20px auto;
   color: #d32f2f;
-  font-weight: 600;
-  animation: pulse 2s infinite;
-}
-
-body.dark .alerta {
-  background: linear-gradient(135deg, rgba(255, 77, 77, 0.1), rgba(255, 77, 77, 0.15));
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
+  font-weight: 700;
+  text-align: center;
+  max-width: 800px;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
 .alerta::before {
-  content: "⚠️";
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff0000, #ff6b6b, #ff0000);
+  animation: shimmer 3s infinite linear;
+  z-index: 1;
+}
+
+.alerta span {
+  position: relative;
+  z-index: 2;
+}
+
+body.dark .alerta {
+  background: linear-gradient(135deg, rgba(255, 77, 77, 0.15), rgba(255, 77, 77, 0.2));
+  border-color: rgba(239, 68, 68, 0.6);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25);
+  color: #ff6b6b;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ===== DICA RÁPIDA VERDE ===== */
+.dica-rapida {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.18));
+  border: 2px solid var(--success);
+  border-radius: 10px;
+  margin: 15px auto;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.4;
+  position: relative;
+  animation: slideInCompact 0.4s ease-out;
+  text-align: center;
+  max-width: 700px;
+  box-shadow: 0 3px 15px rgba(16, 185, 129, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* Classe para quando as dicas estão desativadas */
+.dicas-desativadas .dica-rapida {
+  display: none !important;
+}
+
+.dica-rapida::before {
+  content: "💡";
   font-size: 18px;
+  flex-shrink: 0;
+  color: var(--success);
+}
+
+.dica-rapida .fechar-dica {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.dica-rapida .fechar-dica:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text);
+  transform: rotate(90deg);
+}
+
+@keyframes slideInCompact {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Variantes compactas */
+.dica-rapida.dica-sucesso {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.22));
+  border-color: var(--success);
+  box-shadow: 0 3px 15px rgba(16, 185, 129, 0.2);
+}
+
+.dica-rapida.dica-sucesso::before {
+  content: "✅";
+  color: var(--success);
+}
+
+.dica-rapida.dica-aviso {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.18));
+  border-color: var(--warning);
+  box-shadow: 0 3px 15px rgba(245, 158, 11, 0.15);
+}
+
+.dica-rapida.dica-aviso::before {
+  content: "⚠️";
+  color: var(--warning);
+}
+
+.dica-rapida.dica-info {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.18));
+  border-color: var(--success);
+  box-shadow: 0 3px 15px rgba(16, 185, 129, 0.15);
+}
+
+.dica-rapida.dica-info::before {
+  content: "💡";
+  color: var(--success);
+}
+
+/* Tema escuro compacto */
+body.dark .dica-rapida {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.22));
+  border-color: rgba(16, 185, 129, 0.6);
+}
+
+body.dark .dica-rapida.dica-sucesso {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(16, 185, 129, 0.25));
+  border-color: rgba(16, 185, 129, 0.7);
+}
+
+body.dark .dica-rapida.dica-aviso {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.22));
+  border-color: rgba(245, 158, 11, 0.6);
+}
+
+body.dark .dica-rapida.dica-info {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.22));
+  border-color: rgba(16, 185, 129, 0.6);
 }
 
 /* ===== CONTAINER PRINCIPAL ===== */
@@ -291,7 +493,13 @@ input:focus, select:focus {
   background: var(--card);
 }
 
-/* ===== BOTÕES DE AÇÃO ===== */
+/* Estilo especial para campos monetários */
+input.moeda {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+/* ===== BOTÕES DE AÇÃO COM BRILHO ===== */
 .action-buttons {
   display: flex;
   gap: 15px;
@@ -317,25 +525,77 @@ input:focus, select:focus {
   overflow: hidden;
 }
 
+.action-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.action-button:hover::before {
+  opacity: 1;
+  animation: shine 1.5s infinite;
+}
+
 .action-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(67, 97, 238, 0.5);
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
 }
 
 .action-button.success {
   background: linear-gradient(135deg, var(--success), #059669);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.action-button.success:hover {
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
 }
 
 .action-button.warning {
   background: linear-gradient(135deg, var(--warning), #d97706);
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.action-button.warning:hover {
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
 }
 
 .action-button.receptivo {
   background: linear-gradient(135deg, var(--receptivo), #2563eb);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.action-button.receptivo:hover {
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
 }
 
 .action-button.danger {
   background: linear-gradient(135deg, var(--danger), #b91c1c);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.action-button.danger:hover {
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
 }
 
 .action-button:disabled {
@@ -343,6 +603,11 @@ input:focus, select:focus {
   cursor: not-allowed;
   transform: none !important;
   box-shadow: none !important;
+}
+
+.action-button:disabled:hover::before {
+  opacity: 0;
+  animation: none;
 }
 
 /* ===== RESULTADO ===== */
@@ -484,6 +749,16 @@ tr:hover td {
     font-size: 1.7rem;
   }
   
+  .botoes-topo {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-dicas {
+    width: 100%;
+    justify-content: center;
+  }
+  
   .action-buttons {
     flex-direction: column;
   }
@@ -623,17 +898,22 @@ tr:hover td {
 
 <div class="topo">
   <h1>📊 Dashboard de Cobranças - Play</h1>
-  <button class="btn-theme" onclick="toggleTheme()" title="Alternar tema">
-    <span class="icon sun">☀️</span>
-    <span class="icon moon">🌙</span>
-  </button>
-</div>
-
-<div class="alerta">
-  ATENÇÃO: Verifique as informações do cliente antes de confirmar qualquer pagamento.
+  <div class="botoes-topo">
+    <button class="btn-dicas" id="btnDicas" onclick="toggleDicas()">
+      <span class="icon-dicas"></span>
+      <span id="textoDicas">Dicas</span>
+    </button>
+    <button class="btn-theme" onclick="toggleTheme()" title="Alternar tema">
+      <span class="icon sun">☀️</span>
+      <span class="icon moon">🌙</span>
+    </button>
+  </div>
 </div>
 
 <div class="container">
+  <!-- Dicas rápidas globais -->
+  <div id="dicasContainer"></div>
+  
   <div class="nav-buttons">
     <button class="nav-button active" onclick="mostrarTab('config')">
       ⚙️ Configuração
@@ -650,7 +930,7 @@ tr:hover td {
   <div id="config" class="tab active">
     <div class="card">
       <h2>Configurar Descontos (%)</h2>
-      
+
       <div class="input-group">
         <div>
           <label>Setor:</label>
@@ -732,6 +1012,12 @@ tr:hover td {
         <div class="card">
           <h2>📝 Calcular Negociação</h2>
           
+          <!-- Dica para cálculos (AGORA VERDE) -->
+          <div class="dica-rapida dica-info">
+            <button class="fechar-dica" onclick="this.parentElement.remove()">×</button>
+            <strong>Dica:</strong> Use o botão "Copiar Mensagem" para colar diretamente no WhatsApp ou outro sistema de atendimento.
+          </div>
+          
           <div class="input-group">
             <div>
               <label>Setor:</label>
@@ -749,14 +1035,14 @@ tr:hover td {
             <div class="input-group">
               <div>
                 <label>Valor total (sem juros):</label>
-                <input type="number" id="valorTotal" placeholder="R$ 0,00">
+                <input type="text" id="valorTotal" class="moeda" placeholder="R$ 0,00" oninput="formatarMoedaInput(this)">
               </div>
             </div>
             
             <div id="camposAtraso" class="input-group">
               <div>
                 <label>Valor de cada parcela:</label>
-                <input type="number" id="valorParcelaUnica" placeholder="R$ 0,00">
+                <input type="text" id="valorParcelaUnica" class="moeda" placeholder="R$ 0,00" oninput="formatarMoedaInput(this)">
               </div>
               <div>
                 <label>Quantidade em atraso:</label>
@@ -767,7 +1053,7 @@ tr:hover td {
             <div id="campoValorAtualizado" class="input-group hidden">
               <div>
                 <label>Valor atualizado (com juros):</label>
-                <input type="number" id="valorComJuros" placeholder="R$ 0,00">
+                <input type="text" id="valorComJuros" class="moeda" placeholder="R$ 0,00" oninput="formatarMoedaInput(this)">
               </div>
             </div>
           </div>
@@ -775,7 +1061,7 @@ tr:hover td {
           <div id="camposPlayEmDia" class="input-group hidden">
             <div>
               <label>Valor da parcela:</label>
-              <input type="number" id="pedValorParcela" placeholder="R$ 0,00">
+              <input type="text" id="pedValorParcela" class="moeda" placeholder="R$ 0,00" oninput="formatarMoedaInput(this)">
             </div>
             <div>
               <label>Quantidade de parcelas:</label>
@@ -795,6 +1081,11 @@ tr:hover td {
           <div id="resultado">
             As mensagens aparecerão aqui após clicar em "Gerar Mensagens"
           </div>
+
+          <!-- Alerta para aba Cálculos SEM ÍCONE ⚠ -->
+          <div class="alerta" style="margin-top: 20px;">
+            <span>ATENÇÃO: Verifique se os descontos estão configurados corretamente, antes de enviar a mensagem!</span>
+          </div>
         </div>
       </div>
 
@@ -802,6 +1093,13 @@ tr:hover td {
       <div style="flex: 0 0 300px; position: sticky; top: 20px; align-self: flex-start;">
         <div class="card">
           <h3>🎯 Descontos Aplicados</h3>
+          
+          <!-- Dica sobre descontos (AGORA VERDE) -->
+          <div class="dica-rapida dica-aviso">
+            <button class="fechar-dica" onclick="this.parentElement.remove()">×</button>
+            <strong>Dica Rápida:</strong> Os descontos são aplicados automaticamente conforme o setor selecionado. Confira sempre antes de enviar as propostas.
+          </div>
+          
           <table>
             <tr>
               <th>Tipo</th>
@@ -883,11 +1181,11 @@ tr:hover td {
       <div class="input-group">
         <div>
           <label>Valor Original do Acordo:</label>
-          <input type="number" id="valorAcordo" placeholder="R$ 0,00" oninput="calcularValoresReceptivo()">
+          <input type="text" id="valorAcordo" class="moeda" placeholder="R$ 0,00" oninput="formatarMoedaInput(this); calcularValoresReceptivo()">
         </div>
         <div>
           <label>Valor da Parcela:</label>
-          <input type="number" id="valorParcelaAcordo" placeholder="R$ 0,00" oninput="calcularValoresReceptivo()">
+          <input type="text" id="valorParcelaAcordo" class="moeda" placeholder="R$ 0,00" oninput="formatarMoedaInput(this); calcularValoresReceptivo()">
         </div>
         <div>
           <label>Parcelas Restantes:</label>
@@ -958,8 +1256,12 @@ tr:hover td {
       </div>
 
       <div id="resultadoReceptivo">
-        <!-- Mensagens do receptivo aparecerão aqui -->
         Selecione uma opção acima para gerar a mensagem apropriada.
+      </div>
+
+      <!-- Alerta para aba Receptivo SEM ÍCONE ⚠ -->
+      <div class="alerta" style="margin-top: 20px;">
+        <span>ATENÇÃO: Verifique as informações do cliente antes de confirmar qualquer pagamento.</span>
       </div>
     </div>
   </div>
@@ -983,6 +1285,246 @@ let percentuaisReceptivo = {
     juncao: 10,
     atraso: 5
 };
+
+// ===== FUNÇÕES DE FORMATAÇÃO DE MOEDA =====
+function formatarMoedaInput(input) {
+    // Salvar posição do cursor
+    const cursorPos = input.selectionStart;
+    
+    // Obter valor atual
+    let valor = input.value;
+    
+    // Remover tudo que não for número ou vírgula
+    valor = valor.replace(/[^\d,]/g, '');
+    
+    // Remover múltiplas vírgulas
+    const partes = valor.split(',');
+    if (partes.length > 2) {
+        valor = partes[0] + ',' + partes.slice(1).join('');
+    }
+    
+    // Limitar a 2 casas decimais após a vírgula
+    if (valor.includes(',')) {
+        const [inteiro, decimal] = valor.split(',');
+        if (decimal && decimal.length > 2) {
+            valor = inteiro + ',' + decimal.substring(0, 2);
+        }
+    }
+    
+    // Atualizar valor no campo
+    input.value = valor;
+    
+    // Restaurar posição do cursor
+    setTimeout(() => {
+        input.setSelectionRange(cursorPos, cursorPos);
+    }, 0);
+}
+
+function obterValorNumerico(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input || !input.value) return 0;
+    
+    // Remover pontos de milhar e garantir que vírgula seja ponto decimal
+    let valor = input.value;
+    
+    // Se tiver vírgula, substituir por ponto
+    if (valor.includes(',')) {
+        valor = valor.replace(/\./g, '').replace(',', '.');
+    }
+    
+    // Converter para número
+    const numero = parseFloat(valor);
+    
+    // Se não for número válido, retornar 0
+    if (isNaN(numero)) {
+        return 0;
+    }
+    
+    return numero;
+}
+
+function formatarMoeda(valor) {
+    // Formatar valor para exibição com separador de milhar
+    if (typeof valor !== 'number' || isNaN(valor)) {
+        return 'R$ 0,00';
+    }
+    
+    // Arredondar para 2 casas decimais
+    valor = Math.round(valor * 100) / 100;
+    
+    let partes = valor.toFixed(2).split('.');
+    let inteiro = partes[0];
+    let decimal = partes[1] || '00';
+    
+    // Adicionar separador de milhar se necessário
+    if (inteiro.length > 3) {
+        inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+    
+    return `R$ ${inteiro},${decimal}`;
+}
+
+// ===== CONTROLE DE DICAS =====
+let dicasAtivadas = true;
+
+function carregarEstadoDicas() {
+    const estadoSalvo = localStorage.getItem('dicasAtivadas');
+    if (estadoSalvo !== null) {
+        dicasAtivadas = JSON.parse(estadoSalvo);
+        atualizarEstadoDicasUI();
+    }
+}
+
+function salvarEstadoDicas() {
+    localStorage.setItem('dicasAtivadas', JSON.stringify(dicasAtivadas));
+}
+
+function toggleDicas() {
+    dicasAtivadas = !dicasAtivadas;
+    salvarEstadoDicas();
+    atualizarEstadoDicasUI();
+    aplicarEstadoDicas();
+}
+
+function atualizarEstadoDicasUI() {
+    const btnDicas = document.getElementById('btnDicas');
+    const textoDicas = document.getElementById('textoDicas');
+    
+    if (dicasAtivadas) {
+        btnDicas.classList.add('ativo');
+        textoDicas.textContent = 'Dicas';
+        document.body.classList.remove('dicas-desativadas');
+    } else {
+        btnDicas.classList.remove('ativo');
+        textoDicas.textContent = 'Dicas';
+        document.body.classList.add('dicas-desativadas');
+    }
+}
+
+function aplicarEstadoDicas() {
+    if (dicasAtivadas) {
+        document.body.classList.remove('dicas-desativadas');
+    } else {
+        document.body.classList.add('dicas-desativadas');
+    }
+}
+
+// ===== SISTEMA DE DICAS =====
+const dicasDisponiveis = {
+    setorConfig: {
+        title: "Dica: Escolha do Setor",
+        message: "Selecione o setor correto para carregar os descontos padrão. Cada setor tem configurações específicas.",
+        tipo: "info"
+    },
+    descontoQuitacao: {
+        title: "Dica: Desconto de Quitação",
+        message: "Desconto aplicado quando o cliente quita o débito total à vista. Normalmente é o maior percentual.",
+        tipo: "info"
+    },
+    descontoJuncao: {
+        title: "Dica: Desconto de Junção",
+        message: "Desconto para unir a parcela em atraso com a próxima a vencer. Ideal para clientes que podem pagar duas de uma vez.",
+        tipo: "info"
+    },
+    descontoAtraso: {
+        title: "Dica: Desconto de Atraso",
+        message: "Desconto aplicado apenas nas parcelas em atraso. Incentiva o pagamento das pendências.",
+        tipo: "info"
+    },
+    camposCalculo: {
+        title: "Dica: Campos Dinâmicos",
+        message: "Os campos mudam automaticamente conforme o setor selecionado. Play 6 tem campos diferentes dos outros setores.",
+        tipo: "info"
+    },
+    mensagemGerada: {
+        title: "Dica: Mensagens Geradas",
+        message: "As mensagens são formatadas para WhatsApp com emojis e formatação. Basta copiar e colar no atendimento.",
+        tipo: "sucesso"
+    },
+    statusReceptivo: {
+        title: "Dica: Status do Acordo",
+        message: "Defina corretamente se o acordo está em dia ou com atraso. Isso altera as opções disponíveis.",
+        tipo: "aviso"
+    },
+    infoAcordo: {
+        title: "Dica: Informações do Acordo",
+        message: "Use esta opção para fornecer detalhes completos ao cliente sobre a situação atual e as vantagens da quitação.",
+        tipo: "info"
+    }
+};
+
+function mostrarDica(dicaKey, elementoDestino = null) {
+    // Verificar se as dicas estão ativadas
+    if (!dicasAtivadas) return;
+    
+    // Verificar se a dica já foi mostrada hoje
+    const hoje = new Date().toDateString();
+    const dicasVistas = JSON.parse(localStorage.getItem('dicasVistas') || '{}');
+    
+    if (dicasVistas[dicaKey] === hoje) {
+        return; // Já viu esta dica hoje
+    }
+    
+    const dica = dicasDisponiveis[dicaKey];
+    if (!dica) return;
+    
+    const dicaElement = document.createElement('div');
+    dicaElement.className = `dica-rapida dica-${dica.tipo}`;
+    dicaElement.innerHTML = `
+        <button class="fechar-dica" onclick="this.parentElement.remove(); marcarDicaVista('${dicaKey}')">×</button>
+        <strong>${dica.title}</strong> ${dica.message}
+    `;
+    
+    if (elementoDestino) {
+        elementoDestino.parentNode.insertBefore(dicaElement, elementoDestino.nextSibling);
+    } else {
+        document.getElementById('dicasContainer').appendChild(dicaElement);
+    }
+    
+    // Marcar como vista
+    marcarDicaVista(dicaKey);
+}
+
+function marcarDicaVista(dicaKey) {
+    const hoje = new Date().toDateString();
+    const dicasVistas = JSON.parse(localStorage.getItem('dicasVistas') || '{}');
+    dicasVistas[dicaKey] = hoje;
+    localStorage.setItem('dicasVistas', JSON.stringify(dicasVistas));
+}
+
+function mostrarDicaSetor() {
+    mostrarDica('setorConfig');
+}
+
+function mostrarDicaDesconto(tipo) {
+    const dicaKey = `desconto${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`;
+    if (dicasDisponiveis[dicaKey]) {
+        mostrarDica(dicaKey);
+    }
+}
+
+function mostrarDicaCampos() {
+    mostrarDica('camposCalculo');
+}
+
+function mostrarDicaMensagem() {
+    mostrarDica('mensagemGerada');
+}
+
+function mostrarDicaStatus() {
+    mostrarDica('statusReceptivo');
+}
+
+function mostrarDicaInfoAcordo() {
+    mostrarDica('infoAcordo');
+}
+
+function mostrarDicaDescontoReceptivo(tipo) {
+    const dicaKey = `desconto${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`;
+    if (dicasDisponiveis[dicaKey]) {
+        mostrarDica(dicaKey);
+    }
+}
 
 // ===== CARREGAR DADOS SALVOS =====
 if (localStorage.getItem("descontosSetores")) {
@@ -1161,15 +1703,8 @@ function gerarMensagens() {
     let setor = document.getElementById("setor").value;
     let msg = "";
 
-    const formatarMoeda = (valor) => {
-        return valor.toLocaleString("pt-BR", { 
-            minimumFractionDigits: 2, 
-            maximumFractionDigits: 2 
-        });
-    };
-
     if (setor === "PlayEmDia") {
-        let v = parseFloat(document.getElementById("pedValorParcela").value) || 0;
+        let v = obterValorNumerico("pedValorParcela");
         let q = parseFloat(document.getElementById("pedQtdParcelas").value) || 0;
         let total = v * q;
 
@@ -1182,48 +1717,48 @@ function gerarMensagens() {
 
         // se tiver menos que 14 parcelas → sem anuidade
         if (q < 14) {
-            msg = `No momento você tem *${q} parcelas* restantes no valor de *R$ ${formatarMoeda(v)}*. 
+            msg = `No momento você tem *${q} parcelas* restantes no valor de *${formatarMoeda(v)}*. 
 
-1️⃣ - *QUITAÇÃO* à vista de *R$ ${formatarMoeda(total)}* por apenas *R$ ${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x R$ ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
+1️⃣ - *QUITAÇÃO* à vista de *${formatarMoeda(total)}* por apenas *${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
 
-2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *R$ ${formatarMoeda(v * 2)}* por *R$ ${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
+2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *${formatarMoeda(v * 2)}* por *${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
 
-3️⃣ - *PIX AUTOMÁTICO* em *${q}x R$ ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
+3️⃣ - *PIX AUTOMÁTICO* em *${q}x ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
 
 *Gostaria de aproveitar? Digite a melhor opção!*`;
         } 
         // se tiver 14 parcelas ou mais → com anuidade
         else {
             let v3div12 = v3d / 12;
-            msg = `No momento você tem *${q} parcelas* restantes no valor de *R$ ${formatarMoeda(v)}*.
+            msg = `No momento você tem *${q} parcelas* restantes no valor de *${formatarMoeda(v)}*.
 
-1️⃣ - *QUITAÇÃO* à vista de *R$ ${formatarMoeda(total)}* por apenas *R$ ${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x R$ ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
+1️⃣ - *QUITAÇÃO* à vista de *${formatarMoeda(total)}* por apenas *${formatarMoeda(quit)}* via PIX/BOLETO ou em até *12x ${formatarMoeda(quit12)}* no CARTÃO sem juros. (+ 3 meses de acesso)
 
-2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *R$ ${formatarMoeda(v * 2)}* por *R$ ${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
+2️⃣ - *JUNÇÃO DE 2 PARCELAS* de *${formatarMoeda(v * 2)}* por *${formatarMoeda(v2d)}* no PIX/BOLETO ou em 2x no cartão. Vencimento: HOJE
 
-3️⃣ - *ANUIDADE* pague 12 parcelas de *R$ ${formatarMoeda(v3)}* por *R$ ${formatarMoeda(v3d)}* no PIX ou em 12x de *R$ ${formatarMoeda(v3div12)}* no cartão. Vencimento: HOJE
+3️⃣ - *ANUIDADE* pague 12 parcelas de *${formatarMoeda(v3)}* por *${formatarMoeda(v3d)}* no PIX ou em 12x de *${formatarMoeda(v3div12)}* no cartão. Vencimento: HOJE
 
-4️⃣ - *PIX AUTOMÁTICO* em *${q}x R$ ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
+4️⃣ - *PIX AUTOMÁTICO* em *${q}x ${formatarMoeda(pix)}* (via PIX todo mês com desconto).
 
 *Gostaria de aproveitar? Digite a melhor opção!*`;
         }
     } else if (setor === "Play6") {
-        let total = parseFloat(document.getElementById("valorTotal").value) || 0;
-        let juros = parseFloat(document.getElementById("valorComJuros").value) || 0;
+        let total = obterValorNumerico("valorTotal");
+        let juros = obterValorNumerico("valorComJuros");
         let quit = Math.ceil(total * (1 - descontos.c1 / 100));
         let quit12 = Math.ceil(quit / 12);
 
-        msg = `Valor do débito atualizado: *R$ ${juros}* ⚠️ 
+        msg = `Valor do débito atualizado: *${formatarMoeda(juros)}* ⚠️ 
 
-1️⃣ Quitação no PIX: *R$ ${quit},00 vencimento HOJE* 💠
-2️⃣ Quitação no Cartão: até em 12x de *R$ ${quit12},00 podendo ser de terceiros* 💳
+1️⃣ Quitação no PIX: *${formatarMoeda(quit)} vencimento HOJE* 💠
+2️⃣ Quitação no Cartão: até em 12x de *${formatarMoeda(quit12)} podendo ser de terceiros* 💳
 3️⃣ *Contraproposta da parte do Cliente*
 
 *Qual a melhor opção para negociar hoje e receber o desconto?*`;
 
     } else {
-        let total = parseFloat(document.getElementById("valorTotal").value) || 0;
-        let vp = parseFloat(document.getElementById("valorParcelaUnica").value) || 0;
+        let total = obterValorNumerico("valorTotal");
+        let vp = obterValorNumerico("valorParcelaUnica");
         let qtd = parseFloat(document.getElementById("qtdAtraso").value) || 0;
         let atrasoTotal = vp * qtd;
         
@@ -1233,21 +1768,21 @@ function gerarMensagens() {
         let atraso = Math.ceil(atrasoTotal * (1 - descontos.c3 / 100));
 
         if (setor === "Play1" || setor === "Play2") {
-            msg = `1️⃣ *Quitação* no boleto à vista ou PIX: *R$ ${quit},00 vencimento HOJE* 💠 (+ 3 meses de acesso)
+            msg = `1️⃣ *Quitação* no boleto à vista ou PIX: *${formatarMoeda(quit)} vencimento HOJE* 💠 (+ 3 meses de acesso)
 
-2️⃣ *Quitação* no Cartão de crédito: até em 12x de *R$ ${quit12},00 podendo ser de terceiros 💳*
+2️⃣ *Quitação* no Cartão de crédito: até em 12x de *${formatarMoeda(quit12)} podendo ser de terceiros 💳*
 
-3️⃣ Parcela em *atraso + a vencer* por *R$ ${juncao},00 via pix/cartão HOJE*
+3️⃣ Parcela em *atraso + a vencer* por *${formatarMoeda(juncao)} via pix/cartão HOJE*
 
-4️⃣ *Parcela em atraso* por *R$ ${atraso},00 via pix/cartão HOJE*
+4️⃣ *Parcela em atraso* por *${formatarMoeda(atraso)} via pix/cartão HOJE*
 
 Qual a melhor opção para negociar hoje e receber o desconto?`;
         } else if (setor === "Play3") {
-            msg = `1️⃣ *Quitação* no boleto à vista ou PIX: *R$ ${quit},00 vencimento HOJE* 💠 (+ 3 meses de acesso)
+            msg = `1️⃣ *Quitação* no boleto à vista ou PIX: *${formatarMoeda(quit)} vencimento HOJE* 💠 (+ 3 meses de acesso)
 
-2️⃣ *Quitação* no Cartão de crédito: até em 12x de *R$ ${quit12},00 podendo ser de terceiros 💳*
+2️⃣ *Quitação* no Cartão de crédito: até em 12x de *${formatarMoeda(quit12)} podendo ser de terceiros 💳*
 
-3️⃣ *Parcela em atraso* por *R$ ${atraso},00 via pix/cartão HOJE*
+3️⃣ *Parcela em atraso* por *${formatarMoeda(atraso)} via pix/cartão HOJE*
 
 4️⃣ *Contraproposta da parte do Cliente*
 
@@ -1303,14 +1838,13 @@ function calcularValoresReceptivo() {
     // Salvar percentuais
     salvarPercentuaisReceptivo();
     
-    let valorParcela = parseFloat(document.getElementById("valorParcelaAcordo").value) || 0;
+    let valorParcela = obterValorNumerico("valorParcelaAcordo");
     let parcelasRestantes = parseFloat(document.getElementById("parcelasRestantes").value) || 0;
     let status = document.getElementById("statusAcordo").value;
     
     // Atualizar informações básicas
     document.getElementById("infoParcelasRestantes").textContent = parcelasRestantes;
-    document.getElementById("infoValorParcela").textContent = 
-        `R$ ${valorParcela.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    document.getElementById("infoValorParcela").textContent = formatarMoeda(valorParcela);
     
     // Calcular valores
     let valorTotalRestante = valorParcela * parcelasRestantes;
@@ -1320,19 +1854,15 @@ function calcularValoresReceptivo() {
     let economia = valorTotalRestante - valorComDesconto;
     
     // Atualizar informações
-    document.getElementById("infoTotalRestante").textContent = 
-        `R$ ${valorTotalRestante.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    document.getElementById("infoTotalRestante").textContent = formatarMoeda(valorTotalRestante);
     document.getElementById("infoDescontoQuitacao").textContent = `${desconto}%`;
-    document.getElementById("infoValorComDesconto").textContent = 
-        `R$ ${valorComDesconto.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-    document.getElementById("infoParcelas12x").textContent = 
-        `R$ ${parcelas12x.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-    document.getElementById("infoEconomia").textContent = 
-        `R$ ${economia.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    document.getElementById("infoValorComDesconto").textContent = formatarMoeda(valorComDesconto);
+    document.getElementById("infoParcelas12x").textContent = formatarMoeda(parcelas12x);
+    document.getElementById("infoEconomia").textContent = formatarMoeda(economia);
 }
 
 function gerarMensagemComAtraso() {
-    let valorParcela = parseFloat(document.getElementById("valorParcelaAcordo").value) || 0;
+    let valorParcela = obterValorNumerico("valorParcelaAcordo");
     let parcelasRestantes = parseFloat(document.getElementById("parcelasRestantes").value) || 0;
     let qtdAtraso = parseFloat(document.getElementById("qtdAtrasoReceptivo").value) || 0;
     
@@ -1357,18 +1887,18 @@ function gerarMensagemComAtraso() {
 
 • Status: *Com ${qtdAtraso} parcela(s) em atraso*
 • Parcelas restantes: *${parcelasRestantes}*
-• Valor por parcela: *R$ ${valorParcela.toFixed(2)}*
-• Total a pagar: *R$ ${valorTotal.toFixed(2)}*
+• Valor por parcela: *${formatarMoeda(valorParcela)}*
+• Total a pagar: *${formatarMoeda(valorTotal)}*
 
 🎯 *OPÇÕES DE NEGOCIAÇÃO*
 
-1️⃣ *QUITAÇÃO* no boleto à vista ou PIX: *R$ ${Math.ceil(valorComDesconto)},00 vencimento HOJE* 💠 
+1️⃣ *QUITAÇÃO* no boleto à vista ou PIX: *${formatarMoeda(Math.ceil(valorComDesconto))} vencimento HOJE* 💠 
 
-2️⃣ *QUITAÇÃO* no Cartão de crédito: até em 12x de *R$ ${quit12},00* podendo ser de terceiros 💳
+2️⃣ *QUITAÇÃO* no Cartão de crédito: até em 12x de *${formatarMoeda(quit12)}* podendo ser de terceiros 💳
 
-3️⃣ Parcela em *atraso + a vencer* por *R$ ${juncao},00 via pix/cartão HOJE*
+3️⃣ Parcela em *atraso + a vencer* por *${formatarMoeda(juncao)} via pix/cartão HOJE*
 
-4️⃣ *Parcela em atraso* por *R$ ${atrasoComDesconto},00 via pix/cartão HOJE*
+4️⃣ *Parcela em atraso* por *${formatarMoeda(atrasoComDesconto)} via pix/cartão HOJE*
 
 💡 *Qual a melhor opção para negociar hoje e resolver o débito?*`;
     
@@ -1376,7 +1906,7 @@ function gerarMensagemComAtraso() {
 }
 
 function gerarMensagemSemAtraso() {
-    let valorParcela = parseFloat(document.getElementById("valorParcelaAcordo").value) || 0;
+    let valorParcela = obterValorNumerico("valorParcelaAcordo");
     let parcelasRestantes = parseFloat(document.getElementById("parcelasRestantes").value) || 0;
     
     let valorTotal = valorParcela * parcelasRestantes;
@@ -1394,18 +1924,18 @@ function gerarMensagemSemAtraso() {
 
 • Status: *Ativo (em dia)*
 • Parcelas restantes: *${parcelasRestantes}*
-• Valor por parcela: *R$ ${valorParcela.toFixed(2)}*
-• Total a pagar: *R$ ${valorTotal.toFixed(2)}*
+• Valor por parcela: *${formatarMoeda(valorParcela)}*
+• Total a pagar: *${formatarMoeda(valorTotal)}*
 
 🎯 *OPÇÕES DE NEGOCIAÇÃO*
 
-1️⃣ *QUITAÇÃO* no boleto à vista ou PIX: *R$ ${Math.ceil(valorComDesconto)},00 vencimento HOJE* 💠
+1️⃣ *QUITAÇÃO* no boleto à vista ou PIX: *${formatarMoeda(Math.ceil(valorComDesconto))} vencimento HOJE* 💠
 
-2️⃣ *QUITAÇÃO* no Cartão de crédito: até em 12x de *R$ ${quit12},00* podendo ser de terceiros 💳
+2️⃣ *QUITAÇÃO* no Cartão de crédito: até em 12x de *${formatarMoeda(quit12)}* podendo ser de terceiros 💳
 
-3️⃣ Parcela a *vencer + próximo mês* por *R$ ${juncao},00 via pix/cartão HOJE*
+3️⃣ Parcela a *vencer + próximo mês* por *${formatarMoeda(juncao)} via pix/cartão HOJE*
 
-4️⃣ *Parcela a vencer* por *R$ ${parcelaAVencer},00 via pix/cartão HOJE*
+4️⃣ *Parcela a vencer* por *${formatarMoeda(parcelaAVencer)} via pix/cartão HOJE*
 
 💡 *Qual a melhor opção para negociar hoje e antecipar seu acordo?*`;
     
@@ -1413,7 +1943,7 @@ function gerarMensagemSemAtraso() {
 }
 
 function gerarInfoAcordo() {
-    let valorParcela = parseFloat(document.getElementById("valorParcelaAcordo").value) || 0;
+    let valorParcela = obterValorNumerico("valorParcelaAcordo");
     let parcelasRestantes = parseFloat(document.getElementById("parcelasRestantes").value) || 0;
     let qtdAtraso = parseFloat(document.getElementById("qtdAtrasoReceptivo").value) || 0;
     let status = document.getElementById("statusAcordo").value;
@@ -1428,22 +1958,22 @@ function gerarInfoAcordo() {
 
 • Status: *${status === "ativo" ? "Ativo (em dia)" : "Com parcelas em atraso"}*
 • Parcelas restantes: *${parcelasRestantes}*
-• Valor por parcela: *R$ ${valorParcela.toFixed(2)}*
-• Total a pagar: *R$ ${valorTotal.toFixed(2)}*`;
+• Valor por parcela: *${formatarMoeda(valorParcela)}*
+• Total a pagar: *${formatarMoeda(valorTotal)}*`;
     
     if (status === "atraso" && qtdAtraso > 0) {
         msg += `\n• Parcelas em atraso: *${qtdAtraso}*`;
-        msg += `\n• Valor em atraso: *R$ ${(valorParcela * qtdAtraso).toFixed(2)}*`;
+        msg += `\n• Valor em atraso: *${formatarMoeda(valorParcela * qtdAtraso)}*`;
     }
     
     msg += `\n\n🎯 *PROPOSTA DE QUITAÇÃO ANTECIPADA*
 
 • Desconto especial: *${desconto}%*
-• Valor com desconto: *R$ ${valorComDesconto.toFixed(2)}*
-• Ou em *12x de R$ ${parcelas12x.toFixed(2)}* no cartão
+• Valor com desconto: *${formatarMoeda(valorComDesconto)}*
+• Ou em *12x de ${formatarMoeda(parcelas12x)}* no cartão
 
 💡 *VANTAGENS:*
-✓ Economia imediata de *R$ ${economia.toFixed(2)}*
+✓ Economia imediata de *${formatarMoeda(economia)}*
 ✓ Encerramento do acordo
 ✓ Sem preocupações com vencimentos futuros
 ✓ Declaração de Quitação de forma IMEDIATA
@@ -1494,12 +2024,22 @@ function inicializar() {
         document.body.classList.add("dark");
     }
     
+    // Carregar estado das dicas
+    carregarEstadoDicas();
+    
     // Inicializar componentes
     carregarDescontos();
     ajustarCampos();
     animarTabela();
     atualizarBotoesStatus();
     calcularValoresReceptivo();
+    
+    // Mostrar dica inicial (se dicas ativadas)
+    if (dicasAtivadas) {
+        setTimeout(() => {
+            mostrarDica('setorConfig');
+        }, 1000);
+    }
 }
 
 // Executar ao carregar a página
