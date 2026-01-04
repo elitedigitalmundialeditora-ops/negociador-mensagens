@@ -1310,7 +1310,6 @@ body.dark .elite-image {
   color: var(--primary);
   border: 2px solid var(--primary);
   transition: all 0.3s ease;
-  text-transform: lowercase;
 }
 
 .time-elite-item:hover {
@@ -1327,26 +1326,6 @@ body.dark .time-elite-item {
 body.dark .time-elite-item:hover {
   background: var(--primary);
   color: var(--white);
-}
-
-/* ===== IMAGEM FALLBACK ===== */
-.image-fallback {
-  background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
-  width: 300px;
-  height: 200px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-  color: var(--primary);
-  font-weight: bold;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-body.dark .image-fallback {
-  background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
-  color: white;
 }
 </style>
 </head>
@@ -1714,25 +1693,17 @@ body.dark .image-fallback {
     <div class="card">
       <h2>❓ Ajuda & Informações</h2>
       <p style="color: var(--text-muted); margin-bottom: 25px;">
-        Bem-vindo ao Dashboard de Cobranças Play! Aqui você encontrará todas as informações necessárias para usar a ferramenta.
+        Bem-vindo ao Dashboard de Cobrança! Aqui você encontrará todas as informações necessárias para usar a ferramenta.
       </p>
 
       <div class="icone-grande">🚀</div>
 
-      <!-- Imagem Elite Digital com fallback -->
-      <div class="elite-image-container" id="eliteImageContainer">
-        <img src="https://raw.githubusercontent.com/attackgidatum/negociador-mensagens/main/elite.jpg.jpeg" 
+      <!-- Imagem Elite Digital -->
+      <div class="elite-image-container">
+        <img src="https://raw.githubusercontent.com/[SEU_USUARIO]/[SEU_REPOSITORIO]/main/elite.jpg.jpeg" 
              alt="Logo Elite Digital Mundial Editora" 
              class="elite-image"
-             id="eliteImage"
-             onerror="showImageFallback()">
-        <div class="image-fallback" id="imageFallback" style="display: none;">
-          <div style="text-align: center; padding: 20px;">
-            <div style="font-size: 48px; margin-bottom: 10px;">🏢</div>
-            <div>Elite Digital</div>
-            <div style="font-size: 14px; margin-top: 5px;">Mundial Editora</div>
-          </div>
-        </div>
+             onerror="this.style.display='none'">
       </div>
 
       <div class="ajuda-container">
@@ -1784,7 +1755,7 @@ body.dark .image-fallback {
       <div class="destaque" style="margin-top: 30px; text-align: center;">
         <h3 style="color: var(--primary); margin-bottom: 10px;">👥 Time Elite - Desenvolvimento</h3>
         
-        <!-- Lista de nomes do Time Elite ATUALIZADA -->
+        <!-- Lista de nomes do Time Elite -->
         <div class="time-elite-lista">
           <div class="time-elite-item">cleber_junior</div>
           <div class="time-elite-item">jhonata_nascimento</div>
@@ -1826,19 +1797,6 @@ let percentuaisReceptivo = {
     juncao: 10,
     atraso: 5
 };
-
-// ===== FUNÇÃO PARA FALLBACK DA IMAGEM =====
-function showImageFallback() {
-    const image = document.getElementById('eliteImage');
-    const fallback = document.getElementById('imageFallback');
-    
-    if (image) {
-        image.style.display = 'none';
-    }
-    if (fallback) {
-        fallback.style.display = 'flex';
-    }
-}
 
 // ===== FUNÇÕES DE FORMATAÇÃO DE MOEDA =====
 function formatarMoedaInput(input) {
@@ -2534,14 +2492,6 @@ function inicializar() {
             mostrarDica('setorConfig');
         }, 1000);
     }
-    
-    // Verificar se a imagem carregou corretamente
-    setTimeout(() => {
-        const image = document.getElementById('eliteImage');
-        if (image && image.naturalHeight === 0) {
-            showImageFallback();
-        }
-    }, 2000);
 }
 
 // Executar ao carregar a página
